@@ -11,6 +11,9 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   const formattedFromDate = fromDate ?? yesterday.toISOString().split("T")[0]; // Default to yesterday's date
   const formattedToDate = toDate ?? today.toISOString().split("T")[0]; // Default to today's date
 
+  console.log(`${formattedFromDate}`);
+  console.log(`${formattedToDate}`);
+
   try {
     // Fetch data from the external API
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/plays', {

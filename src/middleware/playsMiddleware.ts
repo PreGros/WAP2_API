@@ -27,8 +27,8 @@ export const validatePlaysParams = (req: Request, res: Response, next: NextFunct
     try {
         const params = {
             id: req.params.id,
-            fromdate: req.query.fromdate ?? null, // Handle undefined as null
-            toDate: req.query.toDate ?? null,    // Handle undefined as null
+            fromdate: req.query.fromdate,
+            toDate: req.query.toDate,
         };
         playsParamsSchema.parse(params);
         next(); // Call next() if validation succeeds
