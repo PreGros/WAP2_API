@@ -1,8 +1,10 @@
 ### Get board game details by ID
-GET http://localhost:3000/api/plays/167355?fromdate=2025-04-03&todate=2025-04-07
+GET http://localhost:3000/api/plays/167355?fromdate=2025-04-07&todate=2025-04-08
 Accept: application/xml
 
-
+### 
+GET http://localhost:3000/api/plays/167355
+Accept: application/xml
 
 ###
 get https://boardgamegeek.com/xmlapi2/thing?id=999999
