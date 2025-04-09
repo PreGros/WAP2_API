@@ -3,7 +3,15 @@ GET http://localhost:3000/api/plays/167355?fromdate=2025-04-08&todate=2025-04-09
 Accept: application/xml
 
 ### 
-GET http://localhost:3000/api/plays/167355
+GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-04-01&todate=2025-04-09
+Accept: application/xml
+
+### 
+GET http://localhost:3000/api/plays/167355/summary
+Accept: application/xml
+
+### 
+GET http://localhost:3000/api/plays/167355/winrate
 Accept: application/xml
 
 ###

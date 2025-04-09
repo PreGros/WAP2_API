@@ -1,6 +1,8 @@
 import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { Play } from "../models/play";
+import { Boardgame } from "../models/boardgame";
+import { getBoardgameById } from "../services/boardgameService";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 3600 });
@@ -10,7 +12,7 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const parsePlays = (playObjects: any): Play[] => {
   return playObjects.map((play: any) => ({
     id: play["@_id"],
-    date: new Date(play["@_date"]),
+    date: new Date(play["@_date"]).toISOString().split("T")[0],
     length: parseInt(play["@_length"], 10),
     players: Array.isArray(play.players?.player)
       ? play.players.player.map((player: any) => ({
@@ -20,6 +22,17 @@ const parsePlays = (playObjects: any): Play[] => {
         }))
       : [],
   }));
+};
+
+const getDefaultDates = (fromDate: string | undefined, toDate: string | undefined) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+
+  return {
+    formattedFromDate: fromDate ?? yesterday.toISOString().split("T")[0],
+    formattedToDate: toDate ?? today.toISOString().split("T")[0],
+  };
 };
 
 const fetchPlaysPage = async (id: string, formattedFromDate: string, formattedToDate: string, page: number) => {
@@ -37,18 +50,13 @@ const fetchPlaysPage = async (id: string, formattedFromDate: string, formattedTo
 };
 
 export const getPlaysById = async (id: string, fromDate: string | undefined, toDate: string | undefined): Promise<Play[]> => {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
+  const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
 
-  const formattedFromDate = fromDate ?? yesterday.toISOString().split("T")[0]; // Default to yesterday's date
-  const formattedToDate = toDate ?? today.toISOString().split("T")[0]; // Default to today's date
-
-  const cacheKey = `${id}_${fromDate}_${toDate}`;
+  const cacheKey = `${id}_${formattedFromDate}_${formattedToDate}`;
   const cachedData = cache.get<Play[]>(cacheKey);
 
   if (cachedData) {
-    console.log("Cache hit");
+    console.log("Play cache hit");
     return cachedData;
   }
 
@@ -91,19 +99,73 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
     // Cache the result
     cache.set(cacheKey, allPlays)
 
-    let counter = 0;
-
-    // allPlays.forEach(play => {
-    //   if (play.players && play.players.length > 0) {
-    //     counter++;
-    //   }
-    // });
-    // console.log(counter);
-    console.log(allPlays)
-
     return allPlays;
 
   }catch (error: any) {
     throw error; 
   }
 };
+
+export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | undefined, toDate: string | undefined) => {
+  const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
+
+  const totalPlays = loadedPlays.length;
+
+  const nonZeroTimePlays = loadedPlays.filter(play => play.length && play.length > 0);
+  const lengthsArray = nonZeroTimePlays.map(play => play.length);
+  const totalPlayTime = nonZeroTimePlays.reduce((sum, play) => sum + play.length, 0);
+  const playTimeStats = {
+    totalPlayTime,
+    nonZeroPlayCount: nonZeroTimePlays.length,
+    maxPlayTime: Math.max(...lengthsArray), // ... spreads each element of array as arguments to function
+    minPlayTime: Math.min(...lengthsArray),
+    averagePlayTime: nonZeroTimePlays.length > 0 ? totalPlayTime / nonZeroTimePlays.length : 0,
+  };
+  
+  // set cuz it stores only unique values
+  // map transform player to only userid
+  // flatMap apply map on each player and create one array from each player in each play
+  const uniquePlayers = new Set(
+    loadedPlays.flatMap(play => (play.players ?? []).map(player => player.userid))
+  ).size;
+
+  const dateRange = {
+    from: formattedFromDate,
+    to: formattedToDate,
+  };
+
+  return {
+    totalPlays,
+    playTimeStats,
+    uniquePlayers,
+    dateRange,
+  };
+};
+
+export const getPlaysWinrate = async (loadedPlays: Play[], id: string) => {
+  const playedBoardgame: Boardgame = await getBoardgameById(id);
+  const maxNumPlayers = parseInt(playedBoardgame.maxPlayers, 10);
+
+  // init Record with number of elems = max number of players for given boardgame
+  const winCounts: Record<string, number> = {};
+  for (let i = 0; i <= maxNumPlayers; i++) {
+    winCounts[`${i}playerwinrate`] = 0;
+  }
+
+  // increment for each play how many players won
+  const playersRecorded = loadedPlays.filter((play) => play.players && play.players.length > 0);
+  playersRecorded.forEach((play) => {
+    const winners = play.players?.filter((player) => player.win == true) || [];
+    const numWinners = winners.length;
+
+    if (numWinners >= 0 && numWinners <= maxNumPlayers) {
+      winCounts[`${numWinners}playerwinrate`] += 1;
+    }
+  });
+
+  const playersRecordedLen = playersRecorded.length;
+
+  return {
+    playersRecordedLen,
+    winCounts};
+}
