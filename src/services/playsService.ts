@@ -1,6 +1,9 @@
-import axios, { all } from "axios";
+import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { Play } from "../models/play";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -17,6 +20,17 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   let allPlays: Play[] = [];
 
   try {
+    const cacheKey = `${id}_${fromDate}_${toDate}`;
+    const cachedData = cache.get<Play[]>(cacheKey);
+
+    if (cachedData) {
+      console.log("Cache hit");
+      cachedData.forEach(play => {
+        console.log(play);
+      });
+      return "DEBUG"
+    }
+
     while (page <= pageCount || pageCount == -1) {
       try {
         const response = await axios.get('https://boardgamegeek.com/xmlapi2/plays', {
@@ -55,7 +69,7 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
                         name: player["@_name"],
                         win: player["@_win"],
                     }))
-                  : [], // Default to an empty array if players.player is not an array
+                  : [], // empty if no players recorded
         }));
 
         allPlays = allPlays.concat(plays);
@@ -71,10 +85,12 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
       }
     }
 
-      allPlays.forEach(play => {
-        if (play.players && play.players.length > 0)
-          console.log(play.players);
-      });
+    // Cache the result
+    cache.set(cacheKey, allPlays)
+
+    allPlays.forEach(play => {
+      console.log(play);
+    });
 
 
     
