@@ -32,7 +32,7 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
         const parser = new XMLParser({ ignoreAttributes: false });
         const parsedData = parser.parse(response.data);
 
-        if (pageCount == -1) {
+        if (pageCount == -1) { // Repeat request logic, first time check for content and set correct pagecount if there is any
           const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
           pageCount = Math.ceil(totalContent / 100);
           if (pageCount == 0) {
@@ -49,20 +49,20 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
           id: play["@_id"],
           date: new Date(play["@_date"]),
           length: parseInt(play["@_length"], 10),
-          players: play.players?.player
-            ? play.players.player.map((player: any) => ({
-                userid: player["@_userid"],
-                name: player["@_name"],
-                win: player["@_win"] === "1",
-              }))
-            : [], // Fallback to an empty array if no players are present
+          players:  Array.isArray(play.players?.player)
+                  ? play.players.player.map((player: any) => ({
+                        userid: player["@_userid"],
+                        name: player["@_name"],
+                        win: player["@_win"],
+                    }))
+                  : [], // Default to an empty array if players.player is not an array
         }));
 
         allPlays = allPlays.concat(plays);
 
-      } catch (error: any) { // rate limit error handling
+      } catch (error: any) { // source API rate limit error handling
         if (error.response?.status === 429) {
-          console.warn("Rate limit hit. Retrying after delay...");
+          console.warn("Source API rate limit hit. Retrying after delay...");
           await sleep(10000);
           continue; 
         } else {
@@ -71,17 +71,16 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
       }
     }
 
-
-
-
-      console.log(allPlays[0].players?.[0]);
-      console.log(allPlays.length);
+      allPlays.forEach(play => {
+        if (play.players && play.players.length > 0)
+          console.log(play.players);
+      });
 
 
     
     return "DEBUG";
 
   }catch (error: any) {
-    throw error; // Re-throw other errors
+    throw error; 
   }
 };
