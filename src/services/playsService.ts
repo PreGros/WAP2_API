@@ -7,7 +7,36 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const getPlaysById = async (id: string, fromDate: string | undefined, toDate: string | undefined): Promise<string> => {
+const parsePlays = (playObjects: any): Play[] => {
+  return playObjects.map((play: any) => ({
+    id: play["@_id"],
+    date: new Date(play["@_date"]),
+    length: parseInt(play["@_length"], 10),
+    players: Array.isArray(play.players?.player)
+      ? play.players.player.map((player: any) => ({
+          userid: player["@_userid"],
+          name: player["@_name"],
+          win: player["@_win"],
+        }))
+      : [],
+  }));
+};
+
+const fetchPlaysPage = async (id: string, formattedFromDate: string, formattedToDate: string, page: number) => {
+  const response = await axios.get('https://boardgamegeek.com/xmlapi2/plays', {
+    params: {
+        id: id,
+        mindate: formattedFromDate,
+        maxdate: formattedToDate,
+        page: page
+    }
+  });
+
+  const parser = new XMLParser({ ignoreAttributes: false });
+  return parser.parse(response.data);
+};
+
+export const getPlaysById = async (id: string, fromDate: string | undefined, toDate: string | undefined): Promise<Play[]> => {
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(today.getDate() - 1);
@@ -15,36 +44,23 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   const formattedFromDate = fromDate ?? yesterday.toISOString().split("T")[0]; // Default to yesterday's date
   const formattedToDate = toDate ?? today.toISOString().split("T")[0]; // Default to today's date
 
+  const cacheKey = `${id}_${fromDate}_${toDate}`;
+  const cachedData = cache.get<Play[]>(cacheKey);
+
+  if (cachedData) {
+    console.log("Cache hit");
+    return cachedData;
+  }
+
   let pageCount = -1;
   let page = 1;
   let allPlays: Play[] = [];
 
   try {
-    const cacheKey = `${id}_${fromDate}_${toDate}`;
-    const cachedData = cache.get<Play[]>(cacheKey);
-
-    if (cachedData) {
-      console.log("Cache hit");
-      cachedData.forEach(play => {
-        console.log(play);
-      });
-      return "DEBUG"
-    }
-
     while (page <= pageCount || pageCount == -1) {
-      try {
-        const response = await axios.get('https://boardgamegeek.com/xmlapi2/plays', {
-          params: {
-              id: id,
-              mindate: formattedFromDate,
-              maxdate: formattedToDate,
-              page: page
-          }
-        });
+      try { // double re-try process cuz source API rate limit recover
+        const parsedData = await fetchPlaysPage(id, formattedFromDate, formattedToDate, page);
         page++;
-
-        const parser = new XMLParser({ ignoreAttributes: false });
-        const parsedData = parser.parse(response.data);
 
         if (pageCount == -1) { // Repeat request logic, first time check for content and set correct pagecount if there is any
           const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
@@ -57,22 +73,9 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
           }
         }
 
-        const playObjects = parsedData.plays?.play;
+        const playObjects = parsedData.plays?.play; // array of play
 
-        const plays: Play[] = playObjects.map((play: any) => ({
-          id: play["@_id"],
-          date: new Date(play["@_date"]),
-          length: parseInt(play["@_length"], 10),
-          players:  Array.isArray(play.players?.player)
-                  ? play.players.player.map((player: any) => ({
-                        userid: player["@_userid"],
-                        name: player["@_name"],
-                        win: player["@_win"],
-                    }))
-                  : [], // empty if no players recorded
-        }));
-
-        allPlays = allPlays.concat(plays);
+        allPlays = allPlays.concat(parsePlays(playObjects));
 
       } catch (error: any) { // source API rate limit error handling
         if (error.response?.status === 429) {
@@ -88,13 +91,17 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
     // Cache the result
     cache.set(cacheKey, allPlays)
 
-    allPlays.forEach(play => {
-      console.log(play);
-    });
+    let counter = 0;
 
+    // allPlays.forEach(play => {
+    //   if (play.players && play.players.length > 0) {
+    //     counter++;
+    //   }
+    // });
+    // console.log(counter);
+    console.log(allPlays)
 
-    
-    return "DEBUG";
+    return allPlays;
 
   }catch (error: any) {
     throw error; 
