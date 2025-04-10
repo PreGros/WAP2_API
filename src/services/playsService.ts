@@ -87,8 +87,9 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
 
       } catch (error: any) { // source API rate limit error handling
         if (error.response?.status === 429) {
-          console.warn("Source API rate limit hit. Retrying after delay...");
-          await sleep(10000);
+          const retryAfter = parseInt(error.response.headers['ratelimit-reset'], 10) || 10;
+          console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+          await sleep(retryAfter * 1000);
           continue; 
         } else {
           throw error;

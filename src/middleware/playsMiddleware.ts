@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 
-// Zod schema for validating parameters
+
+// Zod schema for validating query and path parameters for the plays routes.
 const playsParamsSchema = z.object({
     id: z
         .string()
@@ -22,7 +23,7 @@ const playsParamsSchema = z.object({
         ),
 });
 
-// Middleware for validating query parameters
+// validate query and path parameters for the plays routes.
 export const validatePlaysParams = (req: Request, res: Response, next: NextFunction): void => {
     try {
         const params = {
@@ -31,16 +32,15 @@ export const validatePlaysParams = (req: Request, res: Response, next: NextFunct
             toDate: req.query.toDate,
         };
         playsParamsSchema.parse(params);
-        next(); // Call next() if validation succeeds
+        next();
     } catch (error) {
         if (error instanceof z.ZodError) {
-            // res.status(401).json({ errors: error.errors }); // Return validation errors
             const err = new Error("Validation failed");
             (err as any).statusCode = 400;
             (err as any).details = error.errors;
-            next(err); // Pass to errorHandler
+            next(err);
         } else {
-            next(error); // Pass other errors to the error handler
+            next(error);
         }
     }
 };
