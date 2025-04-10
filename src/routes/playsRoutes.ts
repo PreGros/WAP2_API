@@ -1,7 +1,8 @@
 import express from "express";
 import { fetchPlays, summaryPlays, winratePlays, dailyPlays } from "../controllers/playsController";
 import { validatePlaysParams } from "../middleware/playsMiddleware";
-import { apiRateLimit } from "../middleware/rateLimit";
+import { apiRateLimit } from "../middleware/rateLimitMiddleware";
+import { apiKeyAuth } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ const router = express.Router();
  *       400:
  *         description: Invalid parameters.
  */
-router.get("/:id", apiRateLimit, validatePlaysParams, fetchPlays);
+router.get("/:id", apiRateLimit, apiKeyAuth, validatePlaysParams, fetchPlays);
 
 /**
  * @swagger
@@ -87,7 +88,7 @@ router.get("/:id", apiRateLimit, validatePlaysParams, fetchPlays);
  *       400:
  *         description: Invalid parameters.
  */
-router.get("/:id/summary", apiRateLimit, validatePlaysParams, summaryPlays);
+router.get("/:id/summary", apiRateLimit, apiKeyAuth, validatePlaysParams, summaryPlays);
 
 /**
  * @swagger
@@ -128,7 +129,7 @@ router.get("/:id/summary", apiRateLimit, validatePlaysParams, summaryPlays);
  *       400:
  *         description: Invalid parameters.
  */
-router.get("/:id/winrate", apiRateLimit, validatePlaysParams, winratePlays);
+router.get("/:id/winrate", apiRateLimit, apiKeyAuth, validatePlaysParams, winratePlays);
 
 /**
  * @swagger
@@ -169,6 +170,6 @@ router.get("/:id/winrate", apiRateLimit, validatePlaysParams, winratePlays);
  *       400:
  *         description: Invalid parameters.
  */
-router.get("/:id/daily", apiRateLimit, validatePlaysParams, dailyPlays);
+router.get("/:id/daily", apiRateLimit, apiKeyAuth, validatePlaysParams, dailyPlays);
 
 export default router;
