@@ -117,7 +117,7 @@ export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | un
   const playTimeStats = {
     totalPlayTime,
     nonZeroPlayCount: nonZeroTimePlays.length,
-    maxPlayTime: Math.max(...lengthsArray), // ... spreads each element of array as arguments to function
+    maxPlayTime: Math.max(...lengthsArray), // ... spreads each element of an array as arguments to function
     minPlayTime: Math.min(...lengthsArray),
     averagePlayTime: nonZeroTimePlays.length > 0 ? totalPlayTime / nonZeroTimePlays.length : 0,
   };
@@ -164,8 +164,29 @@ export const getPlaysWinrate = async (loadedPlays: Play[], id: string) => {
   });
 
   const playersRecordedLen = playersRecorded.length;
-
   return {
     playersRecordedLen,
-    winCounts};
+    winCounts,
+  };
+}
+
+export const getPlaysDaily = async (loadedPlays: Play[], fromDate: string | undefined, toDate: string | undefined) => {
+  const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
+
+  const dailyPlayCount: Record<string, number> = {};
+  const endDate = new Date(formattedToDate);
+
+  for (let iterableDate = new Date(formattedFromDate); iterableDate <= endDate; iterableDate.setDate(iterableDate.getDate() + 1)) {
+    dailyPlayCount[iterableDate.toISOString().split("T")[0]] = 0;
+  }
+
+  loadedPlays.forEach(play => {
+    const playDate = play.date.toString();
+    dailyPlayCount[playDate] += 1;
+  });
+
+  return {
+    totalPlayCount: loadedPlays.length,
+    dailyPlayCount
+  };
 }
