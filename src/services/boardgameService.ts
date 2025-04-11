@@ -235,7 +235,6 @@ export const getBoardgameMarketplace = async (
             return true;
         });
     }
-    console.log(new Date(marketListings[0].listDate))
 
     // https://stackoverflow.com/questions/21687907/typescript-sorting-an-array
     if (sort) {
