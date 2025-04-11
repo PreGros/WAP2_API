@@ -23,5 +23,10 @@ GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-01&todate=2025
 x-api-key: debug-api-key
 Accept: application/xml
 
+### 
+GET http://localhost:3000/api/boardgames/167355/
+x-api-key: debug-api-key
+Accept: application/xml
+
 ###
 get https://boardgamegeek.com/xmlapi2/thing?id=999999

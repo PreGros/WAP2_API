@@ -25,14 +25,16 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
     return cachedData;
     }
 
-    let foundBoardGame: Boardgame = {maxPlayers: ""};
+    let foundBoardGame: Boardgame = {maxPlayers: "", bestWith: ""};
     try {
         const parsedData = await fetchboardGame(id);
+        foundBoardGame.bestWith = parsedData.items.item["poll-summary"].result[0]["@_value"];
         foundBoardGame.maxPlayers = parsedData.items.item.maxplayers["@_value"];
     } catch (error) {
         throw error;
     }
 
+    
     // Cache the result
     cache.set(cacheKey, foundBoardGame)
 

@@ -1,6 +1,7 @@
 import express from "express";
 // import dotenv from "dotenv";
 import playsRoutes from "./routes/playsRoutes";
+import boardgamesRoutes from "./routes/boardgamesRoutes";
 import { errorHandler } from "./utils/errorHandler";
 import { apiRateLimit } from "./middleware/rateLimitMiddleware";
 import swaggerUi from "swagger-ui-express";
@@ -30,6 +31,7 @@ app.use(apiKeyAuth);
 
 // Register routes
 app.use("/api/plays", playsRoutes);
+app.use("/api/boardgames", boardgamesRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
