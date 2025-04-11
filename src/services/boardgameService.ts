@@ -142,7 +142,18 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
 
         foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
 
-        console.log(parsedData.items.item.poll[0].results[0]);
+        // console.log(parsedData.items.item.poll[0].results[0]);
+
+        const results = parsedData.items.item.poll[0].results;
+        foundBoardGame.suggestedPlayerCount = Array.isArray(results)
+                                            ? results.map((result: any) => ({
+                                                playerCount: result["@_numplayers"],
+                                                votedBest: result.result[0]["@_numvotes"],
+                                                votedRecommended: result.result[1]["@_numvotes"],
+                                                votedNotRecommended: result.result[2]["@_numvotes"],
+                                            }))
+                                            : [];
+
 
     } catch (error) {
         throw error;
