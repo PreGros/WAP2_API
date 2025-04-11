@@ -142,8 +142,6 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
 
         foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
 
-        // console.log(parsedData.items.item.poll[0].results[0]);
-
         const results = parsedData.items.item.poll[0].results;
         foundBoardGame.suggestedPlayerCount = Array.isArray(results)
                                             ? results.map((result: any) => ({
@@ -164,4 +162,22 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
     cache.set(cacheKey, foundBoardGame)
 
     return foundBoardGame;
+}
+
+export const getSoloRef = async (boardgame: Boardgame) => {
+    let soloVotes = { votedBest: 0, votedRecommended: 0, votedNotRecommended: 0};
+    let totalVotes = 0;
+    
+    if (boardgame.suggestedPlayerCount[0].playerCount == 1) {
+        soloVotes = boardgame.suggestedPlayerCount[0];
+        totalVotes = Number(soloVotes.votedBest) + Number(soloVotes.votedRecommended) + Number(soloVotes.votedNotRecommended);
+    } 
+
+    return {
+        soloRef: {
+            best: totalVotes ? parseFloat((soloVotes.votedBest / totalVotes).toFixed(2)) : 0,
+            recommended: totalVotes ? parseFloat((soloVotes.votedRecommended / totalVotes).toFixed(2)) : 0,
+            notRecommended: totalVotes ? parseFloat((soloVotes.votedNotRecommended / totalVotes).toFixed(2)) : 0,
+        }
+    };
 }

@@ -1,12 +1,25 @@
 import { RequestHandler } from "express";
-import { getBoardgameById } from "../services/boardgameService";
+import { getBoardgameById, getSoloRef } from "../services/boardgameService";
 
-export const fetchboardgames: RequestHandler = async (req, res, next) => {
+export const fetchBoardgames: RequestHandler = async (req, res, next) => {
   const boardGameId = req.params.id;
 
   try {
     const playsData = await getBoardgameById(boardGameId);
     res.json(playsData);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const boardgameSoloRef: RequestHandler = async (req, res, next) => {
+  const boardGameId = req.params.id;
+
+  try {
+    const playsData = await getBoardgameById(boardGameId);
+    const soloRef = await getSoloRef(playsData);
+    res.json(soloRef);
   } catch (error) {
     next(error);
   }
