@@ -181,3 +181,12 @@ export const getSoloRef = async (boardgame: Boardgame) => {
         }
     };
 }
+
+export const getPublishers = async (boardgame: Boardgame) => {
+    if (!boardgame.otherInfo.publishers || boardgame.otherInfo.publishers.length === 0) {
+        return { message: "No publishers found." };
+    }
+
+    const publishers = boardgame.otherInfo.publishers.map(publisher => ({ name: publisher.name }));
+    return { message: "Boardgame publishers", publishers };
+};
