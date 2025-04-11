@@ -9,7 +9,8 @@ const fetchboardGame = async (id: string) => {
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/thing', {
         params: {
             id: id,
-            stats: 1
+            stats: 1,
+            marketplace: 1,
         }
     });
 
@@ -152,6 +153,17 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
                                             }))
                                             : [];
 
+        const marketListings = parsedData.items.item.marketplacelistings.listing;
+        foundBoardGame.marketplaceListing = Array.isArray(marketListings)
+                                            ? marketListings.map((listing: any) => ({
+                                                listDate: listing.listdate["@_value"],
+                                                currency: listing.price["@_currency"],
+                                                price: parseInt(listing.price["@_value"], 10),
+                                                condition: listing.condition["@_value"],
+                                                notes: listing.notes["@_value"],
+                                                link: listing.link["@_href"],
+                                            }))
+                                            : [];
 
     } catch (error) {
         throw error;
@@ -190,3 +202,55 @@ export const getPublishers = async (boardgame: Boardgame) => {
     const publishers = boardgame.otherInfo.publishers.map(publisher => ({ name: publisher.name }));
     return { message: "Boardgame publishers", publishers };
 };
+
+export const getBoardgameMarketplace = async (
+    boardgame: Boardgame,
+    currency: string | undefined,
+    sort: string | undefined,
+    fromDate: string | undefined,
+    toDate: string | undefined) => {
+
+    let marketListings = boardgame.marketplaceListing;
+    if (marketListings == undefined) {
+        return [];
+    }
+
+    if (currency) {
+        marketListings = marketListings.filter(listing => listing.currency === currency);
+    }
+
+    if (fromDate || toDate) {
+        const from = fromDate ? new Date(fromDate) : undefined;
+        const to = toDate ? new Date(toDate) : undefined;
+    
+        marketListings = marketListings.filter(listing => {
+            const listDate = new Date(listing.listDate);
+            if (from && to) {
+                return listDate >= from && listDate <= to;
+            } else if (from) {
+                return listDate >= from;
+            } else if (to) {
+                return listDate <= to;
+            }
+            return true;
+        });
+    }
+    console.log(new Date(marketListings[0].listDate))
+
+    // https://stackoverflow.com/questions/21687907/typescript-sorting-an-array
+    if (sort) {
+        marketListings = marketListings.sort((a, b) => {
+            if (sort === "ascending") {
+                return a.price - b.price;
+            } else if (sort === "descending") {
+                return b.price - a.price;
+            }
+            return 0;
+        });
+    }
+
+    return {
+        listingsCout: marketListings.length,
+        marketListings
+    };
+}
