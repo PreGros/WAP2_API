@@ -183,7 +183,9 @@ export const getPlaysDaily = async (loadedPlays: Play[], fromDate: string | unde
 
   loadedPlays.forEach(play => {
     const playDate = play.date.toString();
-    dailyPlayCount[playDate] += 1;
+    if (dailyPlayCount[playDate] !== undefined) {
+        dailyPlayCount[playDate] += 1;
+    }
   });
 
   return {
