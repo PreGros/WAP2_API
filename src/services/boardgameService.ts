@@ -130,6 +130,12 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
     try {
         const parsedData = await fetchboardGame(id);
         const item = parsedData.items.item;
+        if (!parsedData.items || !parsedData.items.item) {
+            const err = new Error("Board not found");
+            (err as any).statusCode = 404;
+            (err as any).details = "No boardgame found with the given id.";
+            throw err;
+        }
 
         if (item["@_type"] != "boardgame") {
             const err = new Error("Wrong id");
