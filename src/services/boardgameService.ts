@@ -16,7 +16,7 @@ const fetchboardGame = async (id: string) => {
 
     const parser = new XMLParser({ ignoreAttributes: false });
     return parser.parse(response.data);
-    };
+};
 
 const extractStatistics = (statistics: any) => ({
     userRatedCount: parseInt(statistics.usersrated["@_value"], 10),
