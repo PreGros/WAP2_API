@@ -130,6 +130,13 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
         const parsedData = await fetchboardGame(id);
         const item = parsedData.items.item;
 
+        if (item["@_type"] != "boardgame") {
+            const err = new Error("Wrong id");
+            (err as any).statusCode = 400;
+            (err as any).details = "Only boardgames are allowed.";
+            throw err;
+        }
+
         foundBoardGame.name = item.name[0]["@_value"];
         foundBoardGame.bestWith = item["poll-summary"].result[0]["@_value"];
         foundBoardGame.maxPlayers = item.maxplayers["@_value"];
