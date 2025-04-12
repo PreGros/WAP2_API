@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getSearchData } from "../services/searchService";
+import { getSearchData, filterData } from "../services/searchService";
 
 export const fetchSearchData: RequestHandler = async (req, res, next) => {
   const searchQuery = req.query.query as string
@@ -8,8 +8,9 @@ export const fetchSearchData: RequestHandler = async (req, res, next) => {
   const exact = req.query.exact as string | undefined;
 
   try {
-    const playsData = await getSearchData(searchQuery, fromDate, toDate, exact);
-    res.json(playsData);
+    const playsData = await getSearchData(searchQuery, exact);
+    const filteredData = await filterData(playsData, fromDate, toDate);
+    res.json(filteredData);
   } catch (error) {
     next(error);
   }
