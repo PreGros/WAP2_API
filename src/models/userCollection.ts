@@ -1,8 +1,11 @@
 export interface UserCollection {
-    type: string;
-    id: string;
-    name: string;
-    yearPublished: Date;
-    status: string;
-    lastModified: Date;
-}
+    username: string;
+    collectionItem: {
+        type: string;
+        id: string;
+        name: string;
+        yearPublished: Date;
+        statusCode: string;
+        lastModified: Date;
+    }[];
+};

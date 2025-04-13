@@ -18,6 +18,17 @@ const fetchData = async (givenUsername: string) => {
     return parser.parse(response.data);
 };
 
+const parseCollectionItems = (items: any) => {
+  return items.map((item: any) => ({
+    id: item["@_objectid"],
+    name: item.name["#text"],
+    yearPublished: item.yearpublished ? new Date(`${item.yearpublished}-01-01`) : null,
+    type: item["@_subtype"],
+    lastModified: item.status["@_lastmodified"] ? new Date(item.status["@_lastmodified"]) : null,
+    statusCode: `${item.status["@_own"]}${item.status["@_prevowned"]}${item.status["@_fortrade"]}${item.status["@_want"]}${item.status["@_wanttoplay"]}${item.status["@_wanttobuy"]}${item.status["@_wishlist"]}${item.status["@_preordered"]}`,
+  }));
+};
+
 export const getCollection = async (givenUsername: string): Promise<UserCollection> => {
     const cacheKey = `${givenUsername}`;
     const cachedData = cache.get<UserCollection>(cacheKey);
@@ -28,16 +39,12 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
     }
 
     let userCollection: UserCollection = {
-        type: "",
-        id: "",
-        name: "",
-        yearPublished: new Date(),
-        status: "",
-        lastModified: new Date(),
+        username: "",
+        collectionItem: [],
     };
 
     let isCollectionEmpty = true;
-    let alreadyTried = false;
+    let alreadyTried = 0;
     
     while (isCollectionEmpty) {
         try {
@@ -49,12 +56,14 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
                 throw err;
             }
             isCollectionEmpty = false;
+            userCollection.username = givenUsername;
+            userCollection.collectionItem = parseCollectionItems(parsedData.items.item);
         } catch (error: any) {
             if (error.statusCode === 404) {
-                if (alreadyTried) {
+                if (alreadyTried == 4) {
                     throw error;
                 }
-                alreadyTried = true;
+                alreadyTried++;
                 const retryAfter = 0.5;
                 await sleep(retryAfter * 1000);
                 continue; 
