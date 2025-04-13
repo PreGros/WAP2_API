@@ -64,47 +64,42 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   let page = 1;
   let allPlays: Play[] = [];
 
-  try {
-    while (page <= pageCount || pageCount == -1) {
-      try { // double re-try process cuz source API rate limit recover
-        const parsedData = await fetchPlaysPage(id, formattedFromDate, formattedToDate, page);
-        page++;
+  while (page <= pageCount || pageCount == -1) {
+    try { // double re-try process cuz source API rate limit recover
+      const parsedData = await fetchPlaysPage(id, formattedFromDate, formattedToDate, page);
+      page++;
 
-        if (pageCount == -1) { // Repeat request logic, first time check for content and set correct pagecount if there is any
-          const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
-          pageCount = Math.ceil(totalContent / 100);
-          if (pageCount == 0) {
-            const err = new Error("Fetch data failed");
-            (err as any).statusCode = 400;
-            (err as any).details = "No data found with given parameters.";
-            throw err;
-          }
-        }
-
-        const playObjects = parsedData.plays?.play; // array of play
-
-        allPlays = allPlays.concat(parsePlays(playObjects));
-
-      } catch (error: any) { // source API rate limit error handling
-        if (error.response?.status === 429) {
-          const retryAfter = parseInt(error.response.headers['ratelimit-reset'], 10) || 10;
-          console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
-          await sleep(retryAfter * 1000);
-          continue; 
-        } else {
-          throw error;
+      if (pageCount == -1) { // Repeat request logic, first time check for content and set correct pagecount if there is any
+        const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
+        pageCount = Math.ceil(totalContent / 100);
+        if (pageCount == 0) {
+          const err = new Error("Fetch data failed");
+          (err as any).statusCode = 400;
+          (err as any).details = "No data found with given parameters.";
+          throw err;
         }
       }
+
+      const playObjects = parsedData.plays?.play; // array of play
+
+      allPlays = allPlays.concat(parsePlays(playObjects));
+
+    } catch (error: any) { // source API rate limit error handling
+      if (error.response?.status === 429) {
+        const retryAfter = parseInt(error.response.headers['ratelimit-reset'], 10) || 10;
+        console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+        await sleep(retryAfter * 1000);
+        continue; 
+      } else {
+        throw error;
+      }
     }
-
-    // Cache the result
-    cache.set(cacheKey, allPlays)
-
-    return allPlays;
-
-  }catch (error: any) {
-    throw error; 
   }
+
+  // Cache the result
+  cache.set(cacheKey, allPlays)
+
+  return allPlays;
 };
 
 export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | undefined, toDate: string | undefined) => {
