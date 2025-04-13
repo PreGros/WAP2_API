@@ -103,7 +103,6 @@ export const filterCollection = async (collectionData: UserCollection, displayAr
                 switchMap.set(splitArg[0], splitArg[1]);
             }
         });
-        console.log(switchMap);
         filteredCollectionData.collectionItems = filteredCollectionData.collectionItems.filter(collectionItem => { // check every item if status code is correct for every arg in switchMap
             for (const [key, value] of switchMap) {
                 const index = displaySwitchers.get(key) ?? 0;
