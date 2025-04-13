@@ -35,7 +35,7 @@ export const getSearchData = async (query: string, exact: string | undefined): P
     const cachedData = cache.get<SearchData[]>(cacheKey);
 
     if (cachedData) {
-        console.log("Boardgame cache hit");
+        console.log("Search cache hit");
         return cachedData;
     }
 
@@ -57,18 +57,25 @@ export const getSearchData = async (query: string, exact: string | undefined): P
     return allSearch;
 }
 
-export const filterData = async (searchData: SearchData[], fromDate: string | undefined, toDate: string | undefined) => {
+export const filterData = async (searchData: SearchData[], fromDate: string | undefined, toDate: string | undefined, type: string | undefined) => {
     let filteredData = searchData;
+
+    if (type) {
+        filteredData = filteredData.filter(searchItem => {
+            const itemType = searchItem.type;
+            return itemType == type;
+        });
+    }
 
     if (fromDate || toDate) {
         const from = fromDate ? new Date(fromDate) : undefined;
         const to = toDate ? new Date(toDate) : undefined;
     
-        filteredData = searchData.filter(search => {
-            if (!search.yearPublished) {
+        filteredData = filteredData.filter(searchItem => {
+            if (!searchItem.yearPublished) {
                 return false; // exluding items (yearPublished?:)
             }
-            const listDate = new Date(search.yearPublished);
+            const listDate = new Date(searchItem.yearPublished);
             if (from && to) {
                 return listDate >= from && listDate <= to;
             } else if (from) {

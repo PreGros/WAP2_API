@@ -22,6 +22,10 @@ const queryParamsSchema = z.object({
         .string()
         .refine((val) => val === "1" || val === "0", "Exact must be '1' or '0'")
         .optional(),
+    type: z
+        .string()
+        .refine((val) => val === "boardgame" || val === "boardgameexpansion" || val === "rpg" || val === "rpgitem" || val === "videogame", "Wrong type")
+        .optional(),
 });
 
 export const validateSearchParams = (req: Request, res: Response, next: NextFunction): void => {
@@ -31,6 +35,7 @@ export const validateSearchParams = (req: Request, res: Response, next: NextFunc
             fromdate: req.query.fromdate,
             todate: req.query.todate,
             strict: req.query.exact,
+            type: req.query.type,
         });
 
         next();
