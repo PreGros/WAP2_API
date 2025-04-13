@@ -34,13 +34,13 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
     const cachedData = cache.get<UserCollection>(cacheKey);
 
     if (cachedData) {
-        console.log("Colelction cache hit");
+        console.log("Collection cache hit");
         return cachedData;
     }
 
     let userCollection: UserCollection = {
         username: "",
-        collectionItem: [],
+        collectionItems: [],
     };
 
     let isCollectionEmpty = true;
@@ -57,7 +57,7 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
             }
             isCollectionEmpty = false;
             userCollection.username = givenUsername;
-            userCollection.collectionItem = parseCollectionItems(parsedData.items.item);
+            userCollection.collectionItems = parseCollectionItems(parsedData.items.item);
         } catch (error: any) {
             if (error.statusCode === 404) {
                 if (alreadyTried == 4) {
@@ -75,6 +75,43 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
 
     cache.set(cacheKey, userCollection);
 
-
     return userCollection;
+}
+
+export const filterCollection = async (collectionData: UserCollection, displayArgs: string | undefined) => {
+    let filteredCollectionData = collectionData;
+
+    if (displayArgs) {
+        const displaySwitchers = new Map<string, number>([ // arg and index in statusCode
+            ["own", 0],
+            ["prevowned", 1],
+            ["fortrade", 2],
+            ["want", 3],
+            ["wanttoplay", 4],
+            ["wanttobuy", 5],
+            ["wishlist", 6],
+            ["preordered", 7]
+        ]);
+
+        const switchMap = new Map();
+
+        const displayArgsArray = displayArgs.split(',');
+        displayArgsArray.forEach(displayArg => {
+            const splitArg = displayArg.split('=');
+            if (splitArg.length > 1 && displaySwitchers.has(splitArg[0])) {
+                switchMap.set(splitArg[0], splitArg[1]);
+            }
+        });
+        filteredCollectionData.collectionItems = filteredCollectionData.collectionItems.filter(collectionItem => {
+            for (const [key, value] of switchMap) {
+                const index = displaySwitchers.get(key) ?? 0;
+                if (value !== collectionItem.statusCode[index]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+
+    return filteredCollectionData;
 }

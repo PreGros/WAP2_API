@@ -1,6 +1,6 @@
 export interface UserCollection {
     username: string;
-    collectionItem: {
+    collectionItems: {
         type: string;
         id: string;
         name: string;

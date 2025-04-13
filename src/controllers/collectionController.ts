@@ -1,12 +1,14 @@
 import { RequestHandler } from "express";
-import { getCollection } from "../services/collectionService";
+import { getCollection, filterCollection } from "../services/collectionService";
 
 export const fetchCollection: RequestHandler = async (req, res, next) => {
     const username = req.params.username;
+    const displayArgs = req.query.display as string | undefined;
 
   try {
     const collectionData = await getCollection(username);
-    res.json(collectionData);
+    const filteredCollectionData = await filterCollection(collectionData, displayArgs);
+    res.json(filteredCollectionData);
   } catch (error) {
     next(error);
   }

@@ -49,7 +49,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/collection/Pregross
+GET http://localhost:3000/api/collection/Pregros?display=wishlist=1
 x-api-key: debug-api-key
 Accept: application/json
 
