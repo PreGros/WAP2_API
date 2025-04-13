@@ -34,7 +34,7 @@ export const validateSearchParams = (req: Request, res: Response, next: NextFunc
             query: req.query.query,
             fromdate: req.query.fromdate,
             todate: req.query.todate,
-            strict: req.query.exact,
+            exact: req.query.exact,
             type: req.query.type,
         });
 
