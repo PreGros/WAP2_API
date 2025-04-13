@@ -99,10 +99,11 @@ export const filterCollection = async (collectionData: UserCollection, displayAr
         const displayArgsArray = displayArgs.split(',');
         displayArgsArray.forEach(displayArg => { // parse input displayArgs to switchMap 
             const splitArg = displayArg.split('=');
-            if (splitArg.length > 1 && displaySwitchers.has(splitArg[0])) {
+            if (splitArg.length > 1 && displaySwitchers.has(splitArg[0]) && (splitArg[1] == "0" || splitArg[1] == "1")) {
                 switchMap.set(splitArg[0], splitArg[1]);
             }
         });
+        console.log(switchMap);
         filteredCollectionData.collectionItems = filteredCollectionData.collectionItems.filter(collectionItem => { // check every item if status code is correct for every arg in switchMap
             for (const [key, value] of switchMap) {
                 const index = displaySwitchers.get(key) ?? 0;

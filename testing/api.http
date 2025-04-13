@@ -4,7 +4,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-01-01&todate=2025-04-09
+GET http://localhost:3000/api/plays/342070/summary?fromdate=2025-04-01&todate=2025-04-14
 x-api-key: debug-api-key
 Accept: application/json
 
@@ -19,7 +19,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-10&todate=2025-04-11
+GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-01&todate=2025-04-14
 x-api-key: debug-api-key
 Accept: application/json
 
@@ -49,7 +49,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/collection/Pregros
+GET http://localhost:3000/api/collection/Pregros?display=own=
 x-api-key: debug-api-key
 Accept: application/json
 
