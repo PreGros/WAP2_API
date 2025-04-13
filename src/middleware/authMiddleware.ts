@@ -1,14 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const API_KEY = process.env.API_KEY;
+import { config } from "../config";
 
 export const apiKeyAuth = (req: Request, res: Response, next: NextFunction): void => {
   const apiKey = req.headers["x-api-key"];
 
-  if (apiKey === API_KEY) {
+  if (apiKey === config.apiKey) {
     next();
   } else {
     res.status(401).json({ message: "Unauthorized: Invalid API key" });

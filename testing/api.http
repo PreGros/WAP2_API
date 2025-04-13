@@ -1,5 +1,5 @@
 ### Get board game details by ID
-GET http://localhost:3000/api/plays/167355?fromdate=2025-01-10&todate=2025-04-11
+GET http://localhost:3000/api/plays/167355?fromdate=2025-04-10&todate=2025-04-11
 x-api-key: debug-api-key
 Accept: application/json
 
