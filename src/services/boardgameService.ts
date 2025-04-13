@@ -5,6 +5,8 @@ import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const fetchboardGame = async (id: string) => {
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/thing', {
         params: {
@@ -126,60 +128,72 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
             publishers: []
         }
     };
+    let loadedData = true;
 
-    try {
-        const parsedData = await fetchboardGame(id);
-        const item = parsedData.items.item;
-        if (!parsedData.items || !parsedData.items.item) {
-            const err = new Error("Board not found");
-            (err as any).statusCode = 404;
-            (err as any).details = "No boardgame found with the given id.";
-            throw err;
+    while (loadedData) {
+        try {
+            const parsedData = await fetchboardGame(id);
+            const item = parsedData.items.item;
+            if (!parsedData.items || !parsedData.items.item) {
+                const err = new Error("Board not found");
+                (err as any).statusCode = 404;
+                (err as any).details = "No boardgame found with the given id.";
+                throw err;
+            }
+
+            if (item["@_type"] != "boardgame") {
+                const err = new Error("Wrong id");
+                (err as any).statusCode = 400;
+                (err as any).details = "Only boardgames are allowed.";
+                throw err;
+            }
+
+            foundBoardGame.name = item.name[0]["@_value"];
+            foundBoardGame.bestWith = item["poll-summary"].result[0]["@_value"];
+            foundBoardGame.maxPlayers = item.maxplayers["@_value"];
+            foundBoardGame.minPlayers = item.minplayers["@_value"];
+            foundBoardGame.statistics = extractStatistics(item.statistics.ratings);
+
+            if (Array.isArray(item.link)) {
+                foundBoardGame.otherInfo = extractLinks(item.link);
+            }
+
+            foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
+
+            const results = parsedData.items.item.poll[0].results;
+            foundBoardGame.suggestedPlayerCount = Array.isArray(results)
+                                                ? results.map((result: any) => ({
+                                                    playerCount: result["@_numplayers"],
+                                                    votedBest: result.result[0]["@_numvotes"],
+                                                    votedRecommended: result.result[1]["@_numvotes"],
+                                                    votedNotRecommended: result.result[2]["@_numvotes"],
+                                                }))
+                                                : [];
+
+            const marketListings = parsedData.items.item.marketplacelistings.listing;
+            foundBoardGame.marketplaceListing = Array.isArray(marketListings)
+                                                ? marketListings.map((listing: any) => ({
+                                                    listDate: listing.listdate["@_value"],
+                                                    currency: listing.price["@_currency"],
+                                                    price: parseInt(listing.price["@_value"], 10),
+                                                    condition: listing.condition["@_value"],
+                                                    notes: listing.notes["@_value"],
+                                                    link: listing.link["@_href"],
+                                                }))
+                                                : [];
+
+            loadedData = false;
+
+        } catch (error: any) {
+            if (error.response?.status === 429) {
+                const retryAfter = 10;
+                console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+                await sleep(retryAfter * 1000);
+                continue; 
+            } else {
+                throw error;
+            }
         }
-
-        if (item["@_type"] != "boardgame") {
-            const err = new Error("Wrong id");
-            (err as any).statusCode = 400;
-            (err as any).details = "Only boardgames are allowed.";
-            throw err;
-        }
-
-        foundBoardGame.name = item.name[0]["@_value"];
-        foundBoardGame.bestWith = item["poll-summary"].result[0]["@_value"];
-        foundBoardGame.maxPlayers = item.maxplayers["@_value"];
-        foundBoardGame.minPlayers = item.minplayers["@_value"];
-        foundBoardGame.statistics = extractStatistics(item.statistics.ratings);
-
-        if (Array.isArray(item.link)) {
-            foundBoardGame.otherInfo = extractLinks(item.link);
-        }
-
-        foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
-
-        const results = parsedData.items.item.poll[0].results;
-        foundBoardGame.suggestedPlayerCount = Array.isArray(results)
-                                            ? results.map((result: any) => ({
-                                                playerCount: result["@_numplayers"],
-                                                votedBest: result.result[0]["@_numvotes"],
-                                                votedRecommended: result.result[1]["@_numvotes"],
-                                                votedNotRecommended: result.result[2]["@_numvotes"],
-                                            }))
-                                            : [];
-
-        const marketListings = parsedData.items.item.marketplacelistings.listing;
-        foundBoardGame.marketplaceListing = Array.isArray(marketListings)
-                                            ? marketListings.map((listing: any) => ({
-                                                listDate: listing.listdate["@_value"],
-                                                currency: listing.price["@_currency"],
-                                                price: parseInt(listing.price["@_value"], 10),
-                                                condition: listing.condition["@_value"],
-                                                notes: listing.notes["@_value"],
-                                                link: listing.link["@_href"],
-                                            }))
-                                            : [];
-
-    } catch (error) {
-        throw error;
     }
 
     
