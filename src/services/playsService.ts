@@ -55,10 +55,10 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   const cacheKey = `${id}_${formattedFromDate}_${formattedToDate}`;
   const cachedData = cache.get<Play[]>(cacheKey);
 
-  // if (cachedData) {
-  //   console.log("Play cache hit");
-  //   return cachedData;
-  // }
+  if (cachedData) {
+    console.log("Play cache hit");
+    return cachedData;
+  }
 
   let pageCount = -1;
   let page = 1;
