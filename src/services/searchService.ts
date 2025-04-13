@@ -7,6 +7,8 @@ import { allowedNodeEnvironmentFlags } from "process";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const parseSearch = (items: any): SearchData[] => {
   return items.map((item: any) => ({
     id: item["@_id"],
@@ -40,16 +42,26 @@ export const getSearchData = async (query: string, exact: string | undefined): P
     }
 
     let allSearch: SearchData[] = [];
-    
-    try {
-        const parsedData = await fetchData(query, exactParam);
-        if (!parsedData.items || !parsedData.items.item) {
-            throw new Error("No data found for the given query.")
+    let loadedData = true;
+
+    while (loadedData) {
+        try {
+            const parsedData = await fetchData(query, exactParam);
+            if (!parsedData.items || !parsedData.items.item) {
+                throw new Error("No data found for the given query.")
+            }
+            allSearch = parseSearch(parsedData.items.item);
+            loadedData = false;
+        } catch (error: any) {
+            if (error.response?.status === 429) {
+                const retryAfter = 10;
+                console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+                await sleep(retryAfter * 1000);
+                continue; 
+            } else {
+                throw error;
+            }
         }
-        allSearch = parseSearch(parsedData.items.item);
-    } catch (error: any) {
-        error.statusCode = 404;
-        throw error;
     }
 
     cache.set(cacheKey, allSearch)
