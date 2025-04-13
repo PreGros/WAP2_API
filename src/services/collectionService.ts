@@ -24,6 +24,7 @@ const parseCollectionItems = (items: any) => {
     name: item.name["#text"],
     yearPublished: item.yearpublished ? new Date(`${item.yearpublished}-01-01`) : null,
     type: item["@_subtype"],
+    numPlays: parseInt(item.numplays, 10),
     lastModified: item.status["@_lastmodified"] ? new Date(item.status["@_lastmodified"]) : null,
     statusCode: `${item.status["@_own"]}${item.status["@_prevowned"]}${item.status["@_fortrade"]}${item.status["@_want"]}${item.status["@_wanttoplay"]}${item.status["@_wanttobuy"]}${item.status["@_wishlist"]}${item.status["@_preordered"]}`,
   }));
@@ -96,13 +97,13 @@ export const filterCollection = async (collectionData: UserCollection, displayAr
         const switchMap = new Map();
 
         const displayArgsArray = displayArgs.split(',');
-        displayArgsArray.forEach(displayArg => {
+        displayArgsArray.forEach(displayArg => { // parse input displayArgs to switchMap 
             const splitArg = displayArg.split('=');
             if (splitArg.length > 1 && displaySwitchers.has(splitArg[0])) {
                 switchMap.set(splitArg[0], splitArg[1]);
             }
         });
-        filteredCollectionData.collectionItems = filteredCollectionData.collectionItems.filter(collectionItem => {
+        filteredCollectionData.collectionItems = filteredCollectionData.collectionItems.filter(collectionItem => { // check every item if status code is correct for every arg in switchMap
             for (const [key, value] of switchMap) {
                 const index = displaySwitchers.get(key) ?? 0;
                 if (value !== collectionItem.statusCode[index]) {

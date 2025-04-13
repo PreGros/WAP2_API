@@ -6,6 +6,7 @@ export interface UserCollection {
         name: string;
         yearPublished: Date;
         statusCode: string;
+        numPlays: Number;
         lastModified: Date;
     }[];
 };
