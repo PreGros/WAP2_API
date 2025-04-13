@@ -48,5 +48,10 @@ GET http://localhost:3000/api/search?query=Nemesis&exact=1
 x-api-key: debug-api-key
 Accept: application/json
 
+### 
+GET http://localhost:3000/api/collection/Pregros
+x-api-key: debug-api-key
+Accept: application/json
+
 ###
 get https://boardgamegeek.com/xmlapi2/thing?id=999999

@@ -31,7 +31,7 @@ const fetchData = async (query: string, exact: string | undefined) => {
 
 export const getSearchData = async (query: string, exact: string | undefined): Promise<SearchData[]> => {
     const exactParam = exact ?? "0";
-    const cacheKey = `${query}- ${exactParam}`;
+    const cacheKey = `${query}-${exactParam}`;
     const cachedData = cache.get<SearchData[]>(cacheKey);
 
     if (cachedData) {
