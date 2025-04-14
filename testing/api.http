@@ -39,19 +39,16 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/167355/marketplace?sort=descending
+GET http://localhost:3000/api/boardgames/13 /marketplace
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/search?query=Nemesis&todate=2010-01-01
+GET http://localhost:3000/api/search?query=Nemesis&exact=1
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/collection/Pregros?display=,
+GET http://localhost:3000/api/collection/Pregros
 x-api-key: debug-api-key
 Accept: application/json
-
-###
-get https://boardgamegeek.com/xmlapi2/thing?id=999999
