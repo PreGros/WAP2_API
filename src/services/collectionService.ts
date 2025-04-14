@@ -2,6 +2,7 @@ import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { UserCollection } from "../models/userCollection";
 import NodeCache from "node-cache";
+import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -51,16 +52,14 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
         try {
             const parsedData = await fetchData(givenUsername);
             if (!parsedData.items || !parsedData.items.item) {
-                const err = new Error("Fetch data failed");
-                (err as any).statusCode = 404;
-                (err as any).details = "No data found with given parameters.";
+                const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
                 throw err;
             }
             isCollectionEmpty = false;
             userCollection.username = givenUsername;
             userCollection.collectionItems = parseCollectionItems(parsedData.items.item);
-        } catch (error: any) {
-            if (error.statusCode === 404) {
+        } catch (error) {
+            if (error instanceof BadRequestError && error.statusCode === 404) {
                 if (alreadyTried == 4) {
                     throw error;
                 }

@@ -4,6 +4,7 @@ import { SearchData } from "../models/searchData";
 import NodeCache from "node-cache";
 import { parse } from "path";
 import { allowedNodeEnvironmentFlags } from "process";
+import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -48,12 +49,13 @@ export const getSearchData = async (query: string, exact: string | undefined): P
         try {
             const parsedData = await fetchData(query, exactParam);
             if (!parsedData.items || !parsedData.items.item) {
-                throw new Error("No data found for the given query.")
+                const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
+                throw err;
             }
             allSearch = parseSearch(parsedData.items.item);
             loadedData = false;
-        } catch (error: any) {
-            if (error.response?.status === 429) {
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
                 const retryAfter = 10;
                 console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
                 await sleep(retryAfter * 1000);

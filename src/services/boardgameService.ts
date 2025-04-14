@@ -2,6 +2,7 @@ import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { Boardgame } from "../models/boardgame";
 import NodeCache from "node-cache";
+import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -135,16 +136,12 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
             const parsedData = await fetchboardGame(id);
             const item = parsedData.items.item;
             if (!parsedData.items || !parsedData.items.item) {
-                const err = new Error("Board not found");
-                (err as any).statusCode = 404;
-                (err as any).details = "No boardgame found with the given id.";
+                const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
                 throw err;
             }
 
             if (item["@_type"] != "boardgame") {
-                const err = new Error("Wrong id");
-                (err as any).statusCode = 400;
-                (err as any).details = "Only boardgames are allowed.";
+                const err = new BadRequestError(400, "Bad request", "Only boardgames are allowed.");
                 throw err;
             }
 
@@ -184,8 +181,8 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
 
             loadedData = false;
 
-        } catch (error: any) {
-            if (error.response?.status === 429) {
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
                 const retryAfter = 10;
                 console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
                 await sleep(retryAfter * 1000);

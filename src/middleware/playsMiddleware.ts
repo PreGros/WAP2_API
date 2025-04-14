@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
+import { BadRequestError } from "../utils/badRequestError";
 
 const pathParamsSchema = z.object({
     id: z
@@ -39,9 +40,7 @@ export const validatePlaysParams = (req: Request, res: Response, next: NextFunct
         next();
     } catch (error) {
         if (error instanceof z.ZodError) {
-            const err = new Error("Validation failed");
-            (err as any).statusCode = 400;
-            (err as any).details = error.errors;
+            const err = new BadRequestError(400, "Validation failed", error.issues[0].message);
             next(err);
         } else {
             next(error);

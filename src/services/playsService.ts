@@ -4,6 +4,7 @@ import { Play } from "../models/play";
 import { Boardgame } from "../models/boardgame";
 import { getBoardgameById } from "../services/boardgameService";
 import NodeCache from "node-cache";
+import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -73,9 +74,7 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
         const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
         pageCount = Math.ceil(totalContent / 100);
         if (pageCount == 0) {
-          const err = new Error("Fetch data failed");
-          (err as any).statusCode = 400;
-          (err as any).details = "No data found with given parameters.";
+          const err = new BadRequestError(400, "No data found", "No data found with given parameters");
           throw err;
         }
       }
@@ -84,8 +83,8 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
 
       allPlays = allPlays.concat(parsePlays(playObjects));
 
-    } catch (error: any) { // source API rate limit error handling
-      if (error.response?.status === 429) {
+    } catch (error) { // source API rate limit error handling
+      if (axios.isAxiosError(error) && error.response?.status === 429) {
         const retryAfter = 10;
         console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
         await sleep(retryAfter * 1000);

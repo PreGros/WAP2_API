@@ -4,7 +4,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/342070/summary?fromdate=2025-04-01&todate=2025-04-14
+GET http://localhost:3000/api/plays/342070/summary?fromdate=2025-01-02&todate=2025-04-14
 x-api-key: debug-api-key
 Accept: application/json
 
