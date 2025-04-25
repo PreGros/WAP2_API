@@ -17,19 +17,40 @@ const fetchData = async (givenUsername: string) => {
 
     const parser = new XMLParser({ ignoreAttributes: false });
     return parser.parse(response.data);
-};
+}
 
 const parseCollectionItems = (items: any) => {
-  return items.map((item: any) => ({
-    id: item["@_objectid"],
-    name: item.name["#text"],
-    yearPublished: item.yearpublished ? new Date(`${item.yearpublished}-01-01`) : null,
-    type: item["@_subtype"],
-    numPlays: parseInt(item.numplays, 10),
-    lastModified: item.status["@_lastmodified"] ? new Date(item.status["@_lastmodified"]) : null,
-    statusCode: `${item.status["@_own"]}${item.status["@_prevowned"]}${item.status["@_fortrade"]}${item.status["@_want"]}${item.status["@_wanttoplay"]}${item.status["@_wanttobuy"]}${item.status["@_wishlist"]}${item.status["@_preordered"]}`,
-  }));
-};
+    return items.map((item: any) => {
+        const id = item["@_objectid"] ?? "";
+        const name = item.name?.["#text"] ?? "";
+        const yearPublished = item.yearpublished ? new Date(`${item.yearpublished}-01-01`) : new Date(-8640000000000000);
+        const type = item["@_subtype"] ?? "";
+        const numPlays = item.numplays ? parseInt(item.numplays, 10) : 0;
+        const lastModified = item.status?.["@_lastmodified"] ? new Date(item.status["@_lastmodified"]) : new Date(-8640000000000000);
+
+        const statusFields = [
+        item.status?.["@_own"] ?? "0",
+        item.status?.["@_prevowned"] ?? "0",
+        item.status?.["@_fortrade"] ?? "0",
+        item.status?.["@_want"] ?? "0",
+        item.status?.["@_wanttoplay"] ?? "0",
+        item.status?.["@_wanttobuy"] ?? "0",
+        item.status?.["@_wishlist"] ?? "0",
+        item.status?.["@_preordered"] ?? "0",
+        ];
+        const statusCode = statusFields.join("");
+
+        return {
+        id,
+        name,
+        yearPublished,
+        type,
+        numPlays,
+        lastModified,
+        statusCode,
+        };
+    });
+}
 
 export const getCollection = async (givenUsername: string): Promise<UserCollection> => {
     const cacheKey = `${givenUsername}`;
@@ -41,30 +62,39 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
     }
 
     let userCollection: UserCollection = {
-        username: "",
+        username: givenUsername,
         collectionItems: [],
     };
 
     let isCollectionEmpty = true;
     let alreadyTried = 0;
+    const tryLimit = 10;
     
     while (isCollectionEmpty) {
         try {
             const parsedData = await fetchData(givenUsername);
             if (!parsedData.items || !parsedData.items.item) {
-                const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
-                throw err;
+                if (parsedData.message && parsedData.message == "Your request for this collection has been accepted and will be processed.  Please try again later for access.") {
+                    if (alreadyTried >= tryLimit) {
+                        const err = new BadRequestError(504 , "No data was given", "The source API did not respond within the expected time frame.");
+                        throw err;
+                    }
+                    alreadyTried++;
+                    const retryAfter = 0.5;
+                    console.log("Going to sleep");
+                    await sleep(retryAfter * 1000);
+                    continue;
+                }
+                else {
+                    return userCollection;
+                }
             }
             isCollectionEmpty = false;
-            userCollection.username = givenUsername;
             userCollection.collectionItems = parseCollectionItems(parsedData.items.item);
         } catch (error) {
-            if (error instanceof BadRequestError && error.statusCode === 404) {
-                if (alreadyTried == 4) {
-                    throw error;
-                }
-                alreadyTried++;
-                const retryAfter = 0.5;
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
+                const retryAfter = 10;
+                console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
                 await sleep(retryAfter * 1000);
                 continue; 
             } else {
