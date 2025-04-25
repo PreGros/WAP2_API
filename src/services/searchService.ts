@@ -11,12 +11,15 @@ const cache = new NodeCache({ stdTTL: 3600 });
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const parseSearch = (items: any): SearchData[] => {
-  return items.map((item: any) => ({
-    id: item["@_id"],
-    name: item.name["@_value"],
-    yearPublished: item.yearpublished ? new Date(item.yearpublished["@_value"]) : undefined,
-    type: item["@_type"],
-  }));
+    if (!Array.isArray(items)) {
+        items = [items];
+      }
+    return items.map((item: any) => ({
+        id: item["@_id"],
+        name: item.name["@_value"],
+        yearPublished: item.yearpublished ? new Date(item.yearpublished["@_value"]) : undefined,
+        type: item["@_type"],
+    }));
 };
 
 const fetchData = async (query: string, exact: string | undefined) => {

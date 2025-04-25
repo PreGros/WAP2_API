@@ -145,7 +145,7 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
                 throw err;
             }
 
-            foundBoardGame.name = item.name[0]["@_value"];
+            foundBoardGame.name = Array.isArray(item.name) ? item.name[0]["@_value"] : item.name["@_value"];
             foundBoardGame.bestWith = item["poll-summary"].result[0]["@_value"];
             foundBoardGame.maxPlayers = item.maxplayers["@_value"];
             foundBoardGame.minPlayers = item.minplayers["@_value"];
@@ -157,7 +157,7 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
 
             foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
 
-            const results = parsedData.items.item.poll[0].results;
+            const results = item.poll[0].results;
             foundBoardGame.suggestedPlayerCount = Array.isArray(results)
                                                 ? results.map((result: any) => ({
                                                     playerCount: result["@_numplayers"],
@@ -166,18 +166,20 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
                                                     votedNotRecommended: result.result[2]["@_numvotes"],
                                                 }))
                                                 : [];
-
-            const marketListings = parsedData.items.item.marketplacelistings.listing;
-            foundBoardGame.marketplaceListing = Array.isArray(marketListings)
-                                                ? marketListings.map((listing: any) => ({
-                                                    listDate: listing.listdate["@_value"],
-                                                    currency: listing.price["@_currency"],
-                                                    price: parseInt(listing.price["@_value"], 10),
-                                                    condition: listing.condition["@_value"],
-                                                    notes: listing.notes["@_value"],
-                                                    link: listing.link["@_href"],
-                                                }))
-                                                : [];
+                                                
+            if (item.marketplacelistings != undefined) {
+                const marketListings = item.marketplacelistings.listing;
+                foundBoardGame.marketplaceListing = Array.isArray(marketListings)
+                                                    ? marketListings.map((listing: any) => ({
+                                                        listDate: listing.listdate["@_value"],
+                                                        currency: listing.price["@_currency"],
+                                                        price: parseInt(listing.price["@_value"], 10),
+                                                        condition: listing.condition["@_value"],
+                                                        notes: listing.notes["@_value"],
+                                                        link: listing.link["@_href"],
+                                                    }))
+                                                    : [];
+            }
 
             loadedData = false;
 
@@ -236,7 +238,8 @@ export const getBoardgameMarketplace = async (
 
     let marketListings = boardgame.marketplaceListing;
     if (marketListings == undefined) {
-        return [];
+        const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
+            throw err;
     }
 
     if (currency) {

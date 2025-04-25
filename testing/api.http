@@ -24,7 +24,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/167355/
+GET http://localhost:3000/api/boardgames/315328/
 x-api-key: debug-api-key
 Accept: application/json
 
@@ -34,12 +34,12 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/167355/publishers
+GET http://localhost:3000/api/boardgames/20818/publishers
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/13 /marketplace
+GET http://localhost:3000/api/boardgames/20818/marketplace
 x-api-key: debug-api-key
 Accept: application/json
 
@@ -50,5 +50,10 @@ Accept: application/json
 
 ### 
 GET http://localhost:3000/api/collection/Pregros
+x-api-key: debug-api-key
+Accept: application/json
+
+###
+GET http://localhost:3000/api/search?query=Nemesis&fromdate=2015-01-01&exact=1
 x-api-key: debug-api-key
 Accept: application/json

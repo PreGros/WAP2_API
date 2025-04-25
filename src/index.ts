@@ -17,6 +17,10 @@ import { apiKeyAuth } from "./middleware/authMiddleware";
 const app = express();
 const PORT = process.env.PORT || 3000;
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
+const cors = require('cors');
+
+// Added neccessary headers to server's responses to allow requests from other origins
+app.use(cors());
 
 // Middleware to parse incoming requests
 app.use(express.json());
