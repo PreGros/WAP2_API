@@ -280,7 +280,7 @@ const swaggerOptions: Options = {
         MarketplaceResponse: {
           type: "object",
           properties: {
-            listingsCout: {
+            listingsCount: {
               type: "integer",
               description: "The total number of marketplace listings.",
               example: 1,

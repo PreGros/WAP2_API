@@ -22,16 +22,16 @@ const fetchboardGame = async (id: string) => {
 };
 
 const extractStatistics = (statistics: any) => ({
-    userRatedCount: parseInt(statistics.usersrated["@_value"], 10),
-    averageRating: parseFloat(statistics.average["@_value"]),
-    bayesAverageRating: parseFloat(statistics.bayesaverage["@_value"]),
-    owned: parseInt(statistics.owned["@_value"], 10),
-    trading: parseInt(statistics.trading["@_value"], 10),
-    wanting: parseInt(statistics.wanting["@_value"], 10),
-    wishing: parseInt(statistics.wishing["@_value"], 10),
-    numComments: parseInt(statistics.numcomments["@_value"], 10),
-    numWeights: parseInt(statistics.numweights["@_value"], 10),
-    averageWeight: parseFloat(statistics.averageweight["@_value"]),
+    userRatedCount: parseInt(statistics.usersrated?.["@_value"] ?? "0", 10),
+    averageRating: parseFloat(statistics.average?.["@_value"] ?? "0"),
+    bayesAverageRating: parseFloat(statistics.bayesaverage?.["@_value"] ?? "0"),
+    owned: parseInt(statistics.owned?.["@_value"] ?? "0", 10),
+    trading: parseInt(statistics.trading?.["@_value"] ?? "0", 10),
+    wanting: parseInt(statistics.wanting?.["@_value"] ?? "0", 10),
+    wishing: parseInt(statistics.wishing?.["@_value"] ?? "0", 10),
+    numComments: parseInt(statistics.numcomments?.["@_value"] ?? "0", 10),
+    numWeights: parseInt(statistics.numweights?.["@_value"] ?? "0", 10),
+    averageWeight: parseFloat(statistics.averageweight?.["@_value"] ?? "0"),
     ranks: Array.isArray(statistics.ranks.rank)
         ? statistics.ranks.rank.map((rank: any) => ({
             rankId: rank["@_id"],
@@ -56,28 +56,29 @@ const extractLinks = (links: any[]) => {
     };
 
     links.forEach((link) => {
-        const id = link["@_id"];
-        const name = link["@_value"];
-        switch (link["@_type"]) {
-            case "boardgameexpansion":
-                otherInfo.expansions.push({ id, name });
-                break;
-            case "boardgameaccessory":
-                otherInfo.accessories.push({ id, name });
-                break;
-            case "boardgamedesigner":
-                otherInfo.designers.push({ id, name });
-                break;
-            case "boardgameartist":
-                otherInfo.artists.push({ id, name });
-                break;
-            case "boardgamepublisher":
-                otherInfo.publishers.push({ id, name });
-                break;
+        const id = link?.["@_id"] ?? "";
+        const name = link?.["@_value"] ?? "";
+        if (id && name) {
+            switch (link?.["@_type"]) {
+                case "boardgameexpansion":
+                    otherInfo.expansions.push({ id, name });
+                    break;
+                case "boardgameaccessory":
+                    otherInfo.accessories.push({ id, name });
+                    break;
+                case "boardgamedesigner":
+                    otherInfo.designers.push({ id, name });
+                    break;
+                case "boardgameartist":
+                    otherInfo.artists.push({ id, name });
+                    break;
+                case "boardgamepublisher":
+                    otherInfo.publishers.push({ id, name });
+                    break;
+            }
         }
     });
 
-    // Update counts
     otherInfo.expansionsCount = otherInfo.expansions.length;
     otherInfo.accessoriesCount = otherInfo.accessories.length;
     otherInfo.designersCount = otherInfo.designers.length;
@@ -127,7 +128,8 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
             designers: [],
             artists: [],
             publishers: []
-        }
+        },
+        marketplaceListing: []
     };
     let loadedData = true;
 
@@ -145,41 +147,41 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
                 throw err;
             }
 
-            foundBoardGame.name = Array.isArray(item.name) ? item.name[0]["@_value"] : item.name["@_value"];
-            foundBoardGame.bestWith = item["poll-summary"].result[0]["@_value"];
-            foundBoardGame.maxPlayers = item.maxplayers["@_value"];
-            foundBoardGame.minPlayers = item.minplayers["@_value"];
-            foundBoardGame.statistics = extractStatistics(item.statistics.ratings);
+            foundBoardGame.name = Array.isArray(item.name)
+                ? item.name[0]["@_value"] ?? foundBoardGame.name
+                : item.name["@_value"] ?? foundBoardGame.name;
+            foundBoardGame.bestWith = item["poll-summary"]?.result?.[0]?.["@_value"] ?? foundBoardGame.bestWith;
+            foundBoardGame.maxPlayers = item.maxplayers?.["@_value"] ?? foundBoardGame.maxPlayers;
+            foundBoardGame.minPlayers = item.minplayers?.["@_value"] ?? foundBoardGame.minPlayers;
+            foundBoardGame.statistics = (item.statistics && item.statistics.ratings) ? extractStatistics(item.statistics.ratings) : foundBoardGame.statistics;
 
-            if (Array.isArray(item.link)) {
+            if (item.link && Array.isArray(item.link)) {
                 foundBoardGame.otherInfo = extractLinks(item.link);
             }
 
-            foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name || "";
+            foundBoardGame.mainPublisher = foundBoardGame.otherInfo.publishers[0]?.name ?? foundBoardGame.mainPublisher;
 
-            const results = item.poll[0].results;
+            const results = item.poll?.[0]?.results;
             foundBoardGame.suggestedPlayerCount = Array.isArray(results)
-                                                ? results.map((result: any) => ({
-                                                    playerCount: result["@_numplayers"],
-                                                    votedBest: result.result[0]["@_numvotes"],
-                                                    votedRecommended: result.result[1]["@_numvotes"],
-                                                    votedNotRecommended: result.result[2]["@_numvotes"],
-                                                }))
-                                                : [];
-                                                
-            if (item.marketplacelistings != undefined) {
-                const marketListings = item.marketplacelistings.listing;
-                foundBoardGame.marketplaceListing = Array.isArray(marketListings)
-                                                    ? marketListings.map((listing: any) => ({
-                                                        listDate: listing.listdate["@_value"],
-                                                        currency: listing.price["@_currency"],
-                                                        price: parseInt(listing.price["@_value"], 10),
-                                                        condition: listing.condition["@_value"],
-                                                        notes: listing.notes["@_value"],
-                                                        link: listing.link["@_href"],
-                                                    }))
-                                                    : [];
-            }
+                ? results.map((result: any) => ({
+                    playerCount: parseInt(result?.["@_numplayers"] ?? "0", 10),
+                    votedBest: parseInt(result?.result?.[0]?.["@_numvotes"] ?? "0", 10),
+                    votedRecommended: parseInt(result?.result?.[1]?.["@_numvotes"] ?? "0", 10),
+                    votedNotRecommended: parseInt(result?.result?.[2]?.["@_numvotes"] ?? "0", 10),
+                }))
+                : foundBoardGame.suggestedPlayerCount;
+
+            const marketListings = item.marketplacelistings?.listing;
+            foundBoardGame.marketplaceListing = Array.isArray(marketListings)
+                ? marketListings.map((listing: any) => ({
+                    listDate: listing.listdate?.["@_value"] ?? "",
+                    currency: listing.price?.["@_currency"] ?? "",
+                    price: parseFloat(listing.price?.["@_value"] ?? "0"),
+                    condition: listing.condition?.["@_value"] ?? "",
+                    notes: listing.notes?.["@_value"] ?? "",
+                    link: listing.link?.["@_href"] ?? "",
+                }))
+                : foundBoardGame.marketplaceListing;
 
             loadedData = false;
 
@@ -195,7 +197,6 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
         }
     }
 
-    
     // Cache the result
     cache.set(cacheKey, foundBoardGame)
 
@@ -203,19 +204,22 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
 }
 
 export const getSoloRef = async (boardgame: Boardgame) => {
-    let soloVotes = { votedBest: 0, votedRecommended: 0, votedNotRecommended: 0};
+    let soloVotes = { votedBest: 0, votedRecommended: 0, votedNotRecommended: 0 };
     let totalVotes = 0;
-    
-    if (boardgame.suggestedPlayerCount[0].playerCount == 1) {
+
+    if (Array.isArray(boardgame.suggestedPlayerCount) && boardgame.suggestedPlayerCount[0]?.playerCount === 1) {
         soloVotes = boardgame.suggestedPlayerCount[0];
-        totalVotes = Number(soloVotes.votedBest) + Number(soloVotes.votedRecommended) + Number(soloVotes.votedNotRecommended);
-    } 
+        totalVotes = 
+            Number(soloVotes.votedBest ?? 0) + 
+            Number(soloVotes.votedRecommended ?? 0) + 
+            Number(soloVotes.votedNotRecommended ?? 0);
+    }
 
     return {
         soloRef: {
-            best: totalVotes ? parseFloat((soloVotes.votedBest / totalVotes).toFixed(2)) : 0,
-            recommended: totalVotes ? parseFloat((soloVotes.votedRecommended / totalVotes).toFixed(2)) : 0,
-            notRecommended: totalVotes ? parseFloat((soloVotes.votedNotRecommended / totalVotes).toFixed(2)) : 0,
+            best: totalVotes ? parseFloat(((soloVotes.votedBest ?? 0) / totalVotes).toFixed(2)) : 0,
+            recommended: totalVotes ? parseFloat(((soloVotes.votedRecommended ?? 0) / totalVotes).toFixed(2)) : 0,
+            notRecommended: totalVotes ? parseFloat(((soloVotes.votedNotRecommended ?? 0) / totalVotes).toFixed(2)) : 0,
         }
     };
 }
@@ -237,9 +241,11 @@ export const getBoardgameMarketplace = async (
     toDate: string | undefined) => {
 
     let marketListings = boardgame.marketplaceListing;
-    if (marketListings == undefined) {
-        const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
-            throw err;
+    if (marketListings.length == 0) {
+        return {
+            listingsCount: 0,
+            marketListings: []
+        };
     }
 
     if (currency) {
@@ -276,7 +282,7 @@ export const getBoardgameMarketplace = async (
     }
 
     return {
-        listingsCout: marketListings.length,
+        listingsCount: marketListings.length,
         marketListings
     };
 }

@@ -39,7 +39,7 @@ export interface Boardgame {
         artists: { id: string; name: string }[];
         publishers: { id: string; name: string }[];
     };
-    marketplaceListing?: {
+    marketplaceListing: {
         listDate: Date,
         currency: string,
         price: number,
