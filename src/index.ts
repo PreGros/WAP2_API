@@ -1,5 +1,5 @@
 import express from "express";
-// import dotenv from "dotenv";
+import dotenv from "dotenv";
 import playsRoutes from "./routes/playsRoutes";
 import boardgamesRoutes from "./routes/boardgamesRoutes";
 import searchRoutes from "./routes/searchRoutes";
@@ -12,7 +12,7 @@ import swaggerOptions from "./swaggerConfig";
 import { apiKeyAuth } from "./middleware/authMiddleware";
 
 // Load environment variables from .env file
-// dotenv.config();
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

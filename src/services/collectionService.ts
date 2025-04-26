@@ -3,6 +3,9 @@ import { XMLParser } from "fast-xml-parser";
 import { UserCollection } from "../models/userCollection";
 import NodeCache from "node-cache";
 import { BadRequestError } from "../utils/badRequestError";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -68,7 +71,7 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
 
     let isCollectionEmpty = true;
     let alreadyTried = 0;
-    const tryLimit = 10;
+    const tryLimit = parseInt(process.env.COLLECTION_TRY_LIMIT || "10", 10);
     
     while (isCollectionEmpty) {
         try {
