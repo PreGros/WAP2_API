@@ -2,9 +2,6 @@ import axios from "axios";
 import { XMLParser } from "fast-xml-parser";
 import { SearchData } from "../models/searchData";
 import NodeCache from "node-cache";
-import { parse } from "path";
-import { allowedNodeEnvironmentFlags } from "process";
-import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 
@@ -41,7 +38,6 @@ export const getSearchData = async (query: string, exact: string | undefined): P
     const cachedData = cache.get<SearchData[]>(cacheKey);
 
     if (cachedData) {
-        console.log("Search cache hit");
         return cachedData;
     }
 
@@ -60,7 +56,7 @@ export const getSearchData = async (query: string, exact: string | undefined): P
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 429) {
                 const retryAfter = 10;
-                console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+                // console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
                 await sleep(retryAfter * 1000);
                 continue; 
             } else {

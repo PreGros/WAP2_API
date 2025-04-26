@@ -2,9 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { BadRequestError } from "../utils/badRequestError";
 
-// Zod schema for validating query parameters
 const queryParamsSchema = z.object({
-    query: z.string().min(1, "Query must be a non-empty string"), // Validate query as a non-empty string
+    query: z.string().min(1, "Query must be a non-empty string"),
     fromdate: z
         .string()
         .optional()

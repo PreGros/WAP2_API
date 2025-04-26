@@ -30,8 +30,12 @@ const router = express.Router();
  *               $ref: '#/components/schemas/Boardgame'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  *       404:
  *         description: Boardgame not found.
+ *       429:
+ *         description: Source API limit hit.
  */
 router.get("/:id", apiRateLimit, apiKeyAuth, validateBoardgameParams, fetchBoardgames);
 
@@ -59,8 +63,12 @@ router.get("/:id", apiRateLimit, apiKeyAuth, validateBoardgameParams, fetchBoard
  *               $ref: '#/components/schemas/SoloRef'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  *       404:
  *         description: Boardgame not found.
+ *       429:
+ *         description: Source API limit hit.
  */
 router.get("/:id/soloRef", apiRateLimit, apiKeyAuth, validateBoardgameParams, boardgameSoloRef);
 
@@ -88,8 +96,12 @@ router.get("/:id/soloRef", apiRateLimit, apiKeyAuth, validateBoardgameParams, bo
  *               $ref: '#/components/schemas/PublishersResponse'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  *       404:
  *         description: Boardgame not found.
+ *       429:
+ *         description: Source API limit hit.
  */
 router.get("/:id/publishers", apiRateLimit, apiKeyAuth, validateBoardgameParams, boardgamePublisher);
 
@@ -144,8 +156,12 @@ router.get("/:id/publishers", apiRateLimit, apiKeyAuth, validateBoardgameParams,
  *               $ref: '#/components/schemas/MarketplaceResponse'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  *       404:
  *         description: Boardgame not found.
+ *       429:
+ *         description: Source API limit hit.
  */
 router.get("/:id/marketplace", apiRateLimit, apiKeyAuth, validateBoardgameParams, boardgameMarketplace);
 

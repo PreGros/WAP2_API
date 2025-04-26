@@ -5,10 +5,9 @@ import { BadRequestError } from "../utils/badRequestError";
 const pathParamsSchema = z.object({
     id: z
         .string()
-        .refine((val) => !isNaN(Number(val)), "ID must be a number"), // Validate ID as a number
+        .refine((val) => !isNaN(Number(val)), "ID must be a number"),
 });
 
-// Zod schema for validating query parameters
 const queryParamsSchema = z.object({
     fromdate: z
         .string()
@@ -28,10 +27,8 @@ const queryParamsSchema = z.object({
 
 export const validatePlaysParams = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        // Validate path parameters
         pathParamsSchema.parse({ id: req.params.id });
 
-        // Validate query parameters
         queryParamsSchema.parse({
             fromdate: req.query.fromdate,
             todate: req.query.todate,

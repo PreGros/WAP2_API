@@ -57,7 +57,6 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   const cachedData = cache.get<Play[]>(cacheKey);
 
   if (cachedData) {
-    console.log("Play cache hit");
     return cachedData;
   }
 
@@ -88,7 +87,7 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
     } catch (error) { // source API rate limit error handling
       if (axios.isAxiosError(error) && error.response?.status === 429) {
         const retryAfter = 10;
-        console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+        // console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
         await sleep(retryAfter * 1000);
         continue; 
       } else {

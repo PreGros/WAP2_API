@@ -36,8 +36,12 @@ const router = express.Router();
  *               $ref: '#/components/schemas/UserCollection'
  *       400:
  *         description: Invalid parameters.
- *       404:
- *         description: Collection not found.
+ *       401:
+ *         description: Authentication failed.
+ *       429:
+ *         description: Source API limit hit.
+ *       504:
+ *         description: Source API did not respond in specified time frame.
  */
 router.get("/:username", apiRateLimit, apiKeyAuth, validateCollectionParams, fetchCollection);
 

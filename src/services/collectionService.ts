@@ -60,7 +60,6 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
     const cachedData = cache.get<UserCollection>(cacheKey);
 
     if (cachedData) {
-        console.log("Collection cache hit");
         return cachedData;
     }
 
@@ -84,7 +83,6 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
                     }
                     alreadyTried++;
                     const retryAfter = 0.5;
-                    console.log("Going to sleep");
                     await sleep(retryAfter * 1000);
                     continue;
                 }
@@ -97,7 +95,7 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 429) {
                 const retryAfter = 10;
-                console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
+                // console.warn(`Source API rate limit hit. Retrying after ${retryAfter} seconds...`);
                 await sleep(retryAfter * 1000);
                 continue; 
             } else {

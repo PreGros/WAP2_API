@@ -51,7 +51,7 @@ Kolekce uživatele jsou vyhledávány pomocí uživatelského jména. Obsahuje d
 
 Tato cesta vyhledává položky v databázi zdrojové API podle obsahu vyhledávacího pole. Vyhledávané položky mohou být deskové hry, expanze k deskových hrám, tzv. *rpgitem* a videohry. Zde se vyskytuje nekonzistence s typy, protože některé z položek mají typ `boardgame` ačkoliv se nejedná o deskovou hru, ale třeba o promo karty, nebo o jiný dodatečný obsah do dané deskovky. Proto třeba při zobrazení vydavatelů dané položky může vzniknout problém pro tento projekt, protože v rámci zadání lze načítat pouze deskové hry. Tento problém by šel eventuálně vyřešit tím, že by se provedl na každou položku dotaz na detailnější popis, ve kterém se již správný popis nachází.
 
-Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formátem `YYYY-MM-DD` a pokud nejsou specifikovány, tak se zobrazí data bez horní/dolní časové hranice. Dále obsahuje cesta přepínač `exact` nabývající výchozí hodnoty $0$ nebo hodnoty $1$. V případě přepínače nastaveného na $1$ se vypíšou pouze výsledky přesně odpovídajícímu vyhledávanému řetězci. 
+Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formátem `YYYY-MM-DD` a pokud nejsou specifikovány, tak se zobrazí data bez horní/dolní časové hranice. Dále obsahuje cesta přepínač `exact` nabývající výchozí hodnoty $0$ nebo hodnoty $1$. V případě přepínače nastaveného na $1$ se vypíšou pouze výsledky přesně odpovídajícímu vyhledávanému řetězci. Poslední přepínač `type` zanechá pouze položky s daným typem. Na výběr je `boardgame`,`boardgameexpansion`,`rpg`,`rpgitem` a `videogame`.
 
 ## Prerekvizity
 - Docker
@@ -74,7 +74,9 @@ Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštěn�
 
 ## Instalace
 
-Odevzdaný soubor obsahuje kompilovaný typescript projekt z `src/` ve složce `dist/`. Přiložený `Dockerfile` obsahuje již všechny nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. 
+Přiložený `Dockerfile` obsahuje již všechny nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí.
+
+
 
 ```
 docker build -t boardgame-api .

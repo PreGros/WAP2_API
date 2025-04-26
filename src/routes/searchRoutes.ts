@@ -60,6 +60,8 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/SearchData'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  */
 router.get("/", apiRateLimit, apiKeyAuth, validateSearchParams, fetchSearchData);
 

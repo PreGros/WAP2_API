@@ -46,6 +46,8 @@ const router = express.Router();
  *                 $ref: '#/components/schemas/Play'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  */
 router.get("/:id", apiRateLimit, apiKeyAuth, validatePlaysParams, fetchPlays);
 
@@ -87,6 +89,8 @@ router.get("/:id", apiRateLimit, apiKeyAuth, validatePlaysParams, fetchPlays);
  *               $ref: '#/components/schemas/Summary'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  */
 router.get("/:id/summary", apiRateLimit, apiKeyAuth, validatePlaysParams, summaryPlays);
 
@@ -128,6 +132,8 @@ router.get("/:id/summary", apiRateLimit, apiKeyAuth, validatePlaysParams, summar
  *               $ref: '#/components/schemas/WinRate'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  */
 router.get("/:id/winrate", apiRateLimit, apiKeyAuth, validatePlaysParams, winratePlays);
 
@@ -169,6 +175,8 @@ router.get("/:id/winrate", apiRateLimit, apiKeyAuth, validatePlaysParams, winrat
  *               $ref: '#/components/schemas/DailyStats'
  *       400:
  *         description: Invalid parameters.
+ *       401:
+ *         description: Authentication failed.
  */
 router.get("/:id/daily", apiRateLimit, apiKeyAuth, validatePlaysParams, dailyPlays);
 
