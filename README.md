@@ -75,8 +75,6 @@ Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštěn�
 
 Přiložený `Dockerfile` obsahuje již všechna nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí před vytvoření obrazu.
 
-
-
 ```
 docker build -t boardgame-api .
 

@@ -39,7 +39,7 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/167355/marketplace?sort=ascending&fromdate=2025-03-01
+GET http://localhost:3000/api/boardgames/167355/marketplace?sort=descending&fromdate=2025-03-01
 x-api-key: debug-api-key
 Accept: application/json
 

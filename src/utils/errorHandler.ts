@@ -7,6 +7,6 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
   res.status(statusCode).json({
     status: statusCode,
     title,
-    ...(err.description && { detail: err.description }),
+    detail: err.description || "No additional details provided.",
   });
 };

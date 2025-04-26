@@ -16,7 +16,7 @@ const swaggerOptions: Options = {
     ],
     security: [
       {
-        ApiKeyAuth: [], // Apply the ApiKeyAuth globally
+        ApiKeyAuth: [],
       },
     ],
     components: {
