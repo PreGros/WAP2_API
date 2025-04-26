@@ -17,9 +17,7 @@ Zdrojem dat je jiná API webové stránky pro deskové hry [BoardGameGeek](https
 
 ### Výsledná API
 
-Vytvořená API funguje po spuštění lokálně na portu $3000$, pokud není v proměnných prostředí specifikovaný proměnnou `PORT` jiný. Všechny požadavky musí mít v hlavičce záhlaví `x-api-key` s platným klíčem pro autentizaci. Autentizační klíč má výchozí hodnotu `debug-api-key` a dá se přenastavit v proměnných prostředí proměnnou `API_KEY`. Dále je využit i jednoduchý systém omezování rychlosti toku požadavků od jednoho uživatele podle IP adresy, ze které jsou požadavky poslány. Pro zobrazení dat pomocí jednoduché aplikace  bylo nutné povolit tzv. **Cross-Origin Rousource Sharing** pomocí **CORS** knihovny. Implementace popsaných funkcí je popsána níže u závislostí.
-
-PŘIDAT CACHING
+Vytvořená API funguje po spuštění lokálně na portu $3000$, pokud není v proměnných prostředí specifikovaný proměnnou `PORT` jiný. Všechny požadavky musí mít v hlavičce záhlaví `x-api-key` s platným klíčem pro autentizaci. Autentizační klíč má výchozí hodnotu `debug-api-key` a dá se přenastavit v proměnných prostředí proměnnou `API_KEY`. Dále je využit i jednoduchý systém omezování rychlosti toku požadavků od jednoho uživatele podle IP adresy, ze které jsou požadavky poslány. Získaná data ze zdrojové API jsou uložena v mezi paměti podle klíče na hodinu. Pro zobrazení dat pomocí jednoduché aplikace  bylo nutné povolit tzv. **Cross-Origin Rousource Sharing** pomocí **CORS** knihovny.
 
 Výsledná API má celkově čtyři cesty (z angl. routes). První dvě `boardgames` a `plays` mají více konečných bodů (z angl. endpoints), které pracují s konkrétní částí zpracovaných dat a provádí nad němi různé výpočty nebo z nich vytahují jiná data. Kromě toho také obsahují určité přepínače pro filtrování dat. Poslední dvě cesty `collection` a `search` obsahují pouze filtrování dat, nebo omezené seřazení. Více o každé cestě je popsáno níže.
 
@@ -51,23 +49,34 @@ Kolekce uživatele jsou vyhledávány pomocí uživatelského jména. Obsahuje d
 
 ### Search cesta
 
-Tato cesta vyhledává položky v databázi zdrojové API podle obsahu vyhledávacího pole. Vyhledávané položky mohou být deskové hry, expanze k deskových hrám, tzv. *rpgitem* a videohry. Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formátem `YYYY-MM-DD` a pokud nejsou specifikány, tak se zobrazí data bez horní/dolní časové hranice.
+Tato cesta vyhledává položky v databázi zdrojové API podle obsahu vyhledávacího pole. Vyhledávané položky mohou být deskové hry, expanze k deskových hrám, tzv. *rpgitem* a videohry. Zde se vyskytuje nekonzistence s typy, protože některé z položek mají typ `boardgame` ačkoliv se nejedná o deskovou hru, ale třeba o promo karty, nebo o jiný dodatečný obsah do dané deskovky. Proto třeba při zobrazení vydavatelů dané položky může vzniknout problém pro tento projekt, protože v rámci zadání lze načítat pouze deskové hry. Tento problém by šel eventuálně vyřešit tím, že by se provedl na každou položku dotaz na detailnější popis, ve kterém se již správný popis nachází.
+
+Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formátem `YYYY-MM-DD` a pokud nejsou specifikovány, tak se zobrazí data bez horní/dolní časové hranice. Dále obsahuje cesta přepínač `exact` nabývající výchozí hodnoty $0$ nebo hodnoty $1$. V případě přepínače nastaveného na $1$ se vypíšou pouze výsledky přesně odpovídajícímu vyhledávanému řetězci. 
 
 ## Chybové výstupy
 
-## Overview
-The WAP2 API is a RESTful service designed to provide data about board games, including plays, collections, marketplace listings, and more. It integrates with the BoardGameGeek API to fetch and process data.
+## Dojmy z vypracovaného řešení
 
-## Features
-- Retrieve board game details, plays, and statistics.
-- Search for board games, RPGs, and video games.
-- Fetch user collections with filtering options.
-- Access marketplace listings for board games.
-- Swagger documentation for API endpoints.
+..Po prozkoumání možností ohledně problému z cesty `Search`, kdy položky obsahují chybně typ `boardgame` ačkoliv se jedná o expanze, se objevilo východisko v podobě dotazování na více deskovek jedním dotazem. Takové dotazování zdrojová API podporuje a tímto způsobem by se dalo u každé vyhledávané položky ověřit zda-li se opravdu jedná o deskovou hru, nebo o expanzi. Každopádně stále by zde byla otázka rychlosti odpovědi, kdy více jak 10 deskovek už může trvat déle a limit počtu načtení deskovek je 20. Z toho důvodu a také kvůli časovému se autor rozhodl tuto funkcionalitu nezakomponovat do řešení.
 
-## Prerequisites
-- Node.js (v18 or higher)
-- Docker (optional for containerized deployment)
+## Prerekvizity
+- Docker
+- Node.js v18: Pro spouštění projektu mimo kontejner.
+
+## Závisloti
+
+Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštění API jsou nainstalovány pomocí **npm** pro správu balíčků. Závislosti zejména **express-rate-limit** a **zod** se používají zejména v tzv. *middleware* funkcích, které pomáhají při zpracování dotazů.
+
+- **axios**: HTTP klient pro dotazování zdrojového API.
+- **cors**: Middleware zajišťující tzv. *Cross-Origin* sdílení zdrojů (potřeba pro aplikaci zobrazující data).
+- **dotenv**: Pro načítání proměnných prostředí jako `API_KEY` a `COLLECTION_TRY_LIMIT`.
+- **express**: Webový framework pro sestavení API.
+- **express-rate-limit**: *Middleware* pro kontrolování toku požadavků od jednotlivých uživatelů.
+- **fast-xml-parser**: Zpracování příchozích **XML** odpovědí od zdrojové API. 
+- **node-cache**: Ukládání lokálně nefiltrovaných odpovědí podle klíče na omezenou časovou dobu.
+- **swagger-jsdoc**: Generuje OpenAPI dokumentaci z JSDoc komentářů.
+- **swagger-ui-express**: Pomáhá Swagger UI s generovanou API dokumentací.
+- **zod**: Validuje vstupní argumenty podle navolených schémat.
 
 ## Installation
 
@@ -84,5 +93,4 @@ src/
  ├── services/
  └── utils/
 dist/ (build output)
-node_modules/
 ```
