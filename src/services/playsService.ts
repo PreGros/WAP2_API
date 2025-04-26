@@ -12,16 +12,17 @@ const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const parsePlays = (playObjects: any): Play[] => {
   return playObjects.map((play: any) => ({
-    id: play["@_id"],
-    date: new Date(play["@_date"]).toISOString().split("T")[0],
-    length: parseInt(play["@_length"], 10),
+    id: play["@_id"] ?? "",
+    date: play["@_date"] ? new Date(play["@_date"]).toISOString().split("T")[0] : new Date(-8640000000000000).toISOString().split("T")[0],
+    length: parseInt(play["@_length"] ?? "0", 10),
+    comments: play.comments ?? "",
     players: Array.isArray(play.players?.player)
-      ? play.players.player.map((player: any) => ({
-          userid: player["@_userid"],
-          name: player["@_name"],
-          win: player["@_win"],
-        }))
-      : [],
+            ? play.players.player.map((player: any) => ({
+                userid: player["@_userid"] ?? "",
+                name: player["@_name"] ?? "",
+                win: player["@_win"] ?? false,
+              }))
+            : [],
   }));
 };
 
@@ -66,22 +67,24 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   let allPlays: Play[] = [];
 
   while (page <= pageCount || pageCount == -1) {
-    try { // double re-try process cuz source API rate limit recover
+    try {
       const parsedData = await fetchPlaysPage(id, formattedFromDate, formattedToDate, page);
       page++;
 
-      if (pageCount == -1) { // Repeat request logic, first time check for content and set correct pagecount if there is any
-        const totalContent = parseInt(parsedData.plays?.["@_total"], 10);
+      if (pageCount == -1) { // repeat request logic, first time check for content and set correct pagecount if there is any
+        const totalContent = parseInt(parsedData.plays?.["@_total"] ?? "0", 10);
         pageCount = Math.ceil(totalContent / 100);
         if (pageCount == 0) {
-          const err = new BadRequestError(400, "No data found", "No data found with given parameters");
-          throw err;
+          cache.set(cacheKey, allPlays);
+          return allPlays;
         }
       }
 
-      const playObjects = parsedData.plays?.play; // array of play
+      const playObjects = parsedData.plays?.play;
 
-      allPlays = allPlays.concat(parsePlays(playObjects));
+      if (playObjects) {
+        allPlays = allPlays.concat(parsePlays(playObjects));
+      }
 
     } catch (error) { // source API rate limit error handling
       if (axios.isAxiosError(error) && error.response?.status === 429) {
@@ -112,8 +115,8 @@ export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | un
   const playTimeStats = {
     totalPlayTime,
     nonZeroPlayCount: nonZeroTimePlays.length,
-    maxPlayTime: Math.max(...lengthsArray), // ... spreads each element of an array as arguments to function
-    minPlayTime: Math.min(...lengthsArray),
+    maxPlayTime: loadedPlays.length ? Math.max(...lengthsArray) : 0, // ... spreads each element of an array as arguments to function
+    minPlayTime: loadedPlays.length ? Math.min(...lengthsArray) : 0,
     averagePlayTime: nonZeroTimePlays.length > 0 ? totalPlayTime / nonZeroTimePlays.length : 0,
   };
   
