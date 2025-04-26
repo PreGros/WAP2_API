@@ -53,19 +53,13 @@ Tato cesta vyhledává položky v databázi zdrojové API podle obsahu vyhledáv
 
 Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formátem `YYYY-MM-DD` a pokud nejsou specifikovány, tak se zobrazí data bez horní/dolní časové hranice. Dále obsahuje cesta přepínač `exact` nabývající výchozí hodnoty $0$ nebo hodnoty $1$. V případě přepínače nastaveného na $1$ se vypíšou pouze výsledky přesně odpovídajícímu vyhledávanému řetězci. 
 
-## Chybové výstupy
-
-## Dojmy z vypracovaného řešení
-
-..Po prozkoumání možností ohledně problému z cesty `Search`, kdy položky obsahují chybně typ `boardgame` ačkoliv se jedná o expanze, se objevilo východisko v podobě dotazování na více deskovek jedním dotazem. Takové dotazování zdrojová API podporuje a tímto způsobem by se dalo u každé vyhledávané položky ověřit zda-li se opravdu jedná o deskovou hru, nebo o expanzi. Každopádně stále by zde byla otázka rychlosti odpovědi, kdy více jak 10 deskovek už může trvat déle a limit počtu načtení deskovek je 20. Z toho důvodu a také kvůli časovému se autor rozhodl tuto funkcionalitu nezakomponovat do řešení.
-
 ## Prerekvizity
 - Docker
 - Node.js v18: Pro spouštění projektu mimo kontejner.
 
 ## Závisloti
 
-Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštění API jsou nainstalovány pomocí **npm** pro správu balíčků. Závislosti zejména **express-rate-limit** a **zod** se používají zejména v tzv. *middleware* funkcích, které pomáhají při zpracování dotazů.
+Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštění API jsou nainstalovány pomocí **npm** pro správu balíčků. Závislosti jako **express-rate-limit** a **zod** se používají zejména v tzv. *middleware* funkcích, které pomáhají při zpracování dotazů.
 
 - **axios**: HTTP klient pro dotazování zdrojového API.
 - **cors**: Middleware zajišťující tzv. *Cross-Origin* sdílení zdrojů (potřeba pro aplikaci zobrazující data).
@@ -78,19 +72,30 @@ Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštěn�
 - **swagger-ui-express**: Pomáhá Swagger UI s generovanou API dokumentací.
 - **zod**: Validuje vstupní argumenty podle navolených schémat.
 
-## Installation
+## Instalace
 
-
-
-## Project Structure
+Odevzdaný soubor obsahuje kompilovaný typescript projekt z `src/` ve složce `dist/`. Přiložený `Dockerfile` obsahuje již všechny nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. 
 
 ```
-src/
- ├── controllers/
- ├── middleware/
- ├── models/
- ├── routes/
- ├── services/
- └── utils/
-dist/ (build output)
+docker build -t boardgame-api .
+
+docker run -p 3000:3000 boardgame-api
 ```
+## Chybové výstupy
+
+- **400**: Používá se při neplatných parametrech nebo požadavcích, například při validaci vstupů.
+- **401**: Používá se při poskytnutí neplatného API klíče.
+- **404**: Používá se, pokud bylo poskytnuto neplatné identifikační číslo deskové hry.
+- **429**: Používá se při limitaci toku požadavků, pokud je překročen limit u dané IP adresy.
+- **504**: Používá se u kolekcí, pokud zdrojová API neodpoví v očekávaném časovém rámci.
+- **500**: Používá se jako výchozí chybový kód, pokud není specifikován jiný kód.
+
+## Dojmy z vypracovaného řešení
+
+..Po prozkoumání možností ohledně problému z cesty `Search`, kdy položky obsahují chybně typ `boardgame` ačkoliv se jedná o expanze, se objevilo východisko v podobě dotazování na více deskovek jedním dotazem. Takové dotazování zdrojová API podporuje a tímto způsobem by se dalo u každé vyhledávané položky ověřit zda-li se opravdu jedná o deskovou hru, nebo o expanzi. Každopádně stále by zde byla otázka rychlosti odpovědi, kdy více jak 10 deskovek už může trvat déle a limit počtu načtení deskovek je 20. Z toho důvodu a také kvůli časovému se autor rozhodl tuto funkcionalitu nezakomponovat do řešení.
+
+<!-- ## Struktura projektu
+
+```
+
+``` -->

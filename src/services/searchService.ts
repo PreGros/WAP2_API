@@ -52,8 +52,8 @@ export const getSearchData = async (query: string, exact: string | undefined): P
         try {
             const parsedData = await fetchData(query, exactParam);
             if (!parsedData.items || !parsedData.items.item) {
-                const err = new BadRequestError(404, "No data found", "No data found with given parameters.");
-                throw err;
+                cache.set(cacheKey, allSearch);
+                return allSearch;
             }
             allSearch = parseSearch(parsedData.items.item);
             loadedData = false;
@@ -69,7 +69,7 @@ export const getSearchData = async (query: string, exact: string | undefined): P
         }
     }
 
-    cache.set(cacheKey, allSearch)
+    cache.set(cacheKey, allSearch);
 
     return allSearch;
 }
