@@ -174,7 +174,7 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
             const marketListings = item.marketplacelistings?.listing;
             foundBoardGame.marketplaceListing = Array.isArray(marketListings)
                 ? marketListings.map((listing: any) => ({
-                    listDate: listing.listdate?.["@_value"] ?? "",
+                    listDate: new Date(listing.listdate?.["@_value"]) ?? new Date(-8640000000000000),
                     currency: listing.price?.["@_currency"] ?? "",
                     price: parseFloat(listing.price?.["@_value"] ?? "0"),
                     condition: listing.condition?.["@_value"] ?? "",
