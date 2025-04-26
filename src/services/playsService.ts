@@ -4,7 +4,6 @@ import { Play } from "../models/play";
 import { Boardgame } from "../models/boardgame";
 import { getBoardgameById } from "../services/boardgameService";
 import NodeCache from "node-cache";
-import { BadRequestError } from "../utils/badRequestError";
 
 const cache = new NodeCache({ stdTTL: 3600 });
 

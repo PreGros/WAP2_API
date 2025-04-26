@@ -1,10 +1,10 @@
 ### Get board game details by ID
-GET http://localhost:3000/api/plays/167355?fromdate=2025-04-27
+GET http://localhost:3000/api/plays/313790?fromdate=2025-03-25
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-04-27
+GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-04-25
 x-api-key: debug-api-key
 Accept: application/json
 
@@ -14,17 +14,17 @@ x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/167355/winrate?fromdate=2025-04-27
+GET http://localhost:3000/api/plays/167355/winrate?fromdate=2025-04-20
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-27
+GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-25
 x-api-key: debug-api-key
 Accept: application/json
 
 ### 
-GET http://localhost:3000/api/boardgames/167355/
+GET http://localhost:3000/api/boardgames/434327/
 x-api-key: debug-api-key
 Accept: application/json
 
