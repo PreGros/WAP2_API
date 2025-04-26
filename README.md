@@ -55,7 +55,6 @@ Obsahuje přepínače pro vyhledávání pouze v daném časovém oknu s formát
 
 ## Prerekvizity
 - Docker
-- Node.js v18: Pro spouštění projektu mimo kontejner.
 
 ## Závisloti
 
@@ -74,7 +73,7 @@ Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštěn�
 
 ## Instalace
 
-Přiložený `Dockerfile` obsahuje již všechny nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí.
+Přiložený `Dockerfile` obsahuje již všechna nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí před vytvoření obrazu.
 
 
 
@@ -91,6 +90,14 @@ docker run -p 3000:3000 boardgame-api
 - **429**: Používá se při limitaci toku požadavků, pokud je překročen limit u dané IP adresy.
 - **504**: Používá se u kolekcí, pokud zdrojová API neodpoví v očekávaném časovém rámci.
 - **500**: Používá se jako výchozí chybový kód, pokud není specifikován jiný kód.
+
+## Proměnné prostředí
+
+Pro změnu portu, počtu vyzkoušení získání kolekce nebo změnu autentizačního klíče je potřeba v souboru proměnných prostředí `.env` náležité proměnné. Příklady zde zobrazené jsou výchozí hodnoty nastavené při jejich absenci.
+
+- **API_KEY**=debug-api-key
+- **COLLECTION_TRY_LIMIT**=10
+- **PORT**=3000
 
 ## Dojmy z vypracovaného řešení
 

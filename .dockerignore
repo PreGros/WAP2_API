@@ -2,5 +2,5 @@ node_modules
 Dockerfile
 .dockerignore
 testing
-readme.txt
+README.md
 dist
