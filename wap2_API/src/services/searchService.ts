@@ -7,6 +7,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// parsing data to search items
 const parseSearch = (items: any): SearchData[] => {
     if (!Array.isArray(items)) {
         items = [items];
@@ -19,8 +20,8 @@ const parseSearch = (items: any): SearchData[] => {
     }));
 };
 
+// fetch data from source API and parse them
 const fetchData = async (query: string, exact: string | undefined) => {
-    
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/search', {
         params: {
             query: query,
@@ -32,6 +33,7 @@ const fetchData = async (query: string, exact: string | undefined) => {
     return parser.parse(response.data);
 };
 
+// main parsing function
 export const getSearchData = async (query: string, exact: string | undefined): Promise<SearchData[]> => {
     const exactParam = exact ?? "0";
     const cacheKey = `${query}-${exactParam}`;
@@ -70,6 +72,7 @@ export const getSearchData = async (query: string, exact: string | undefined): P
     return allSearch;
 }
 
+// filtering search items
 export const filterData = async (searchData: SearchData[], fromDate: string | undefined, toDate: string | undefined, type: string | undefined) => {
     let filteredData = searchData;
 

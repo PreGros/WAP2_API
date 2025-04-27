@@ -8,6 +8,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// fetch data from source API and parse them
 const fetchboardGame = async (id: string) => {
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/thing', {
         params: {
@@ -21,6 +22,7 @@ const fetchboardGame = async (id: string) => {
     return parser.parse(response.data);
 };
 
+// exctract statistics
 const extractStatistics = (statistics: any) => ({
     userRatedCount: parseInt(statistics.usersrated?.["@_value"] ?? "0", 10),
     averageRating: parseFloat(statistics.average?.["@_value"] ?? "0"),
@@ -41,6 +43,7 @@ const extractStatistics = (statistics: any) => ({
         : [],
 });
 
+// extract links
 const extractLinks = (links: any[]) => {
     const otherInfo = {
         expansionsCount: 0,
@@ -88,6 +91,7 @@ const extractLinks = (links: any[]) => {
     return otherInfo;
 };
 
+// main fetching function
 export const getBoardgameById = async (id: string): Promise<Boardgame> => {
     const cacheKey = `${id}`;
     const cachedData = cache.get<Boardgame>(cacheKey);
@@ -202,6 +206,7 @@ export const getBoardgameById = async (id: string): Promise<Boardgame> => {
     return foundBoardGame;
 }
 
+// get solo recommendation
 export const getSoloRef = async (boardgame: Boardgame) => {
     let soloVotes = { votedBest: 0, votedRecommended: 0, votedNotRecommended: 0 };
     let totalVotes = 0;
@@ -223,6 +228,7 @@ export const getSoloRef = async (boardgame: Boardgame) => {
     };
 }
 
+// get publishers 
 export const getPublishers = async (boardgame: Boardgame) => {
     if (!boardgame.otherInfo.publishers || boardgame.otherInfo.publishers.length === 0) {
         return { message: "No publishers found." };
@@ -232,6 +238,7 @@ export const getPublishers = async (boardgame: Boardgame) => {
     return { message: "Boardgame publishers", publishers };
 };
 
+// get and filter marketplace listings
 export const getBoardgameMarketplace = async (
     boardgame: Boardgame,
     currency: string | undefined,

@@ -11,6 +11,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// fetching data from source API and parsing them
 const fetchData = async (givenUsername: string) => {
     const response = await axios.get('https://boardgamegeek.com/xmlapi2/collection', {
         params: {
@@ -22,6 +23,7 @@ const fetchData = async (givenUsername: string) => {
     return parser.parse(response.data);
 }
 
+// parsing collectionsItems, compiling statusCode together
 const parseCollectionItems = (items: any) => {
     return items.map((item: any) => {
         const id = item["@_objectid"] ?? "";
@@ -55,6 +57,7 @@ const parseCollectionItems = (items: any) => {
     });
 }
 
+// main fetching function for collection, contains handler for source API "Wait for response 200 OK"
 export const getCollection = async (givenUsername: string): Promise<UserCollection> => {
     const cacheKey = `${givenUsername}`;
     const cachedData = cache.get<UserCollection>(cacheKey);
@@ -109,6 +112,7 @@ export const getCollection = async (givenUsername: string): Promise<UserCollecti
     return userCollection;
 }
 
+// filtering collection items according to display args
 export const filterCollection = async (collectionData: UserCollection, displayArgs: string | undefined) => {
     let filteredCollectionData = collectionData;
 

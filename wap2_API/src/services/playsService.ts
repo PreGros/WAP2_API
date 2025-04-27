@@ -9,6 +9,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// parsing each play and its players
 const parsePlays = (playObjects: any): Play[] => {
   return playObjects.map((play: any) => ({
     id: play["@_id"] ?? "",
@@ -25,6 +26,7 @@ const parsePlays = (playObjects: any): Play[] => {
   }));
 };
 
+// today and yesterdays date in right format if arguments are absent
 const getDefaultDates = (fromDate: string | undefined, toDate: string | undefined) => {
   const today = new Date();
   const yesterday = new Date(today);
@@ -36,6 +38,7 @@ const getDefaultDates = (fromDate: string | undefined, toDate: string | undefine
   };
 };
 
+// fetching data from source API and parsing them
 const fetchPlaysPage = async (id: string, formattedFromDate: string, formattedToDate: string, page: number) => {
   const response = await axios.get('https://boardgamegeek.com/xmlapi2/plays', {
     params: {
@@ -50,6 +53,7 @@ const fetchPlaysPage = async (id: string, formattedFromDate: string, formattedTo
   return parser.parse(response.data);
 };
 
+// main fetching function, contating each data batch to results (parsing them beforehand)
 export const getPlaysById = async (id: string, fromDate: string | undefined, toDate: string | undefined): Promise<Play[]> => {
   const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
 
@@ -102,6 +106,7 @@ export const getPlaysById = async (id: string, fromDate: string | undefined, toD
   return allPlays;
 };
 
+// create summary of fetched plays
 export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | undefined, toDate: string | undefined) => {
   const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
 
@@ -118,7 +123,7 @@ export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | un
     averagePlayTime: nonZeroTimePlays.length > 0 ? totalPlayTime / nonZeroTimePlays.length : 0,
   };
   
-  // set cuz it stores only unique values
+  // set because it stores only unique values
   // map transform player to only userid
   // flatMap apply map on each player and create one array from each player in each play
   const uniquePlayers = new Set(
@@ -138,6 +143,7 @@ export const getPlaysSummary = async (loadedPlays: Play[], fromDate: string | un
   };
 };
 
+// get winrate for each player win count
 export const getPlaysWinrate = async (loadedPlays: Play[], id: string) => {
   const playedBoardgame: Boardgame = await getBoardgameById(id);
   const maxNumPlayers = parseInt(playedBoardgame.maxPlayers, 10);
@@ -166,14 +172,15 @@ export const getPlaysWinrate = async (loadedPlays: Play[], id: string) => {
   };
 }
 
+// computing how many plays were recorded for each day in the time range
 export const getPlaysDaily = async (loadedPlays: Play[], fromDate: string | undefined, toDate: string | undefined) => {
   const { formattedFromDate, formattedToDate } = getDefaultDates(fromDate, toDate);
 
   const dailyPlayCount: Record<string, number> = {};
   const endDate = new Date(formattedToDate);
 
-  for (let iterableDate = new Date(formattedFromDate); iterableDate <= endDate; iterableDate.setDate(iterableDate.getDate() + 1)) {
-    dailyPlayCount[iterableDate.toISOString().split("T")[0]] = 0;
+  for (let i = new Date(formattedFromDate); i <= endDate; i.setDate(i.getDate() + 1)) {
+    dailyPlayCount[i.toISOString().split("T")[0]] = 0;
   }
 
   loadedPlays.forEach(play => {
