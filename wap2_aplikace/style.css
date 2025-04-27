@@ -1,0 +1,235 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    margin: 20px 0;
+    font-size: 2em;
+    color: #333;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: background-color 0.3s, border-radius 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #d8d8d8;
+    border-radius: 5px;
+}
+
+/* Main Container */
+#main-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px;
+}
+
+/* Search Container */
+#search-container {
+    flex: 2;
+    margin-right: 20px;
+}
+
+/* Search Controls */
+#search-controls {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#search-controls .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#search-controls input[type="text"],
+#search-controls input[type="checkbox"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#search-controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#search-controls button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#search-controls button:hover {
+    background-color: #0056b3;
+}
+
+#search-controls div > label {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #333;
+}
+
+#search-controls div > input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Marketplace Filters */
+#marketplace-filters {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+#marketplace-filters h3 {
+    margin: 0 0 10px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+#marketplace-filters div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+#marketplace-filters input,
+#marketplace-filters select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Buttons */
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#fetchData {
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+}
+
+#fetchData:hover {
+    background-color: #0056b3;
+}
+
+.show-marketplace {
+    margin-top: 10px;
+    background-color: #a8256d;
+    color: white;
+}
+
+.show-marketplace:hover {
+    background-color: #8a215b;
+}
+
+.show-publishers {
+    margin-right: 4px;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.show-publishers:hover {
+    background-color: #0056b3;
+}
+
+/* Output and Items */
+#output {
+    margin-top: 20px;
+}
+
+.game-item,
+.marketplace-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-item h2 {
+    margin: 0 0 10px;
+    font-size: 1.5em;
+}
+
+.game-item p,
+.marketplace-item p {
+    margin: 5px 0;
+    font-size: 1em;
+}
+
+/* Publishers Container */
+#publishers-container {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+#publishers-container h2 {
+    margin-top: 0;
+}
+
+.publisher-item {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.publisher-item:last-child {
+    border-bottom: none;
+}

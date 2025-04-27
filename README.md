@@ -31,7 +31,7 @@ Podrobný popis cest, konečných bodů a schémat lze najít v automaticky gene
 
 Vstupní informací je identifikační číslo deskové hry. Tímto identifikačním číslem jsou ve zdrojové databázi označeny nejen deskové hry, ale také expanze, tzv. *rpgitem*, nebo videohry. Podle zadání projektu podporuje vytvořená API pouze načítání deskových her. Pokud požadavek obsahuje identifikační číslo, které neodpovídá deskové hře, je vrácen chybový kód $400$ s odpovídající chybovou hláškou. 
 
-Kromě zpracovaných dat lze také vypisovat u konkrétní hry jak si u hráčích vedla při hraní sólo (pouze jeden hráč) pomocí konečného bodu `soloRef`. Výsledkem jsou tři čísla reprezentující procentuálně jestli hraní sólo je nejlepší, pouze doporučovaná nebo nedoporučovaná. Dalším konečným bodem je `publishers`, který vypíše všechny vydavatele dané hry. Posledním konečným bodem je `marketplace` vytahující všechny přidané nabídky dané hry. S přepínači `fromdate` a `todate` lze specifikovat přesné časové okno, ve kterém se vypsané nabídky musí pohybovat. Časový formát je `YYYY-MM-DD` a při nespecifikování se nestanovuje horní/dolní omezení. Přepínač `sort` seřadí nabídky podle ceny buď vzestupně (hodnota *ascending*), nebo sestupně (hodnota *descending*).
+Kromě zpracovaných dat lze také vypisovat u konkrétní hry jak si u hráčích vedla při hraní sólo (pouze jeden hráč) pomocí konečného bodu `soloRef`. Výsledkem jsou tři čísla reprezentující procentuálně jestli hraní sólo je nejlepší, pouze doporučovaná nebo nedoporučovaná. Dalším konečným bodem je `publishers`, který vypíše všechny vydavatele dané hry. Posledním konečným bodem je `marketplace` vytahující všechny přidané nabídky dané hry. S přepínači `fromdate` a `todate` lze specifikovat přesné časové okno, ve kterém se vypsané nabídky musí pohybovat. Časový formát je `YYYY-MM-DD` a při nespecifikování se nestanovuje horní/dolní omezení. Přepínač `sort` seřadí nabídky podle ceny buď vzestupně (hodnota *ascending*), nebo sestupně (hodnota *descending*). Posledním přepínačem je `currency`, který zobrazí pouze nabídky v dané měně.
 
 ### Plays cesta
 
@@ -74,7 +74,7 @@ Všechny závislosti jsou uvedeny v `package.json` a při manuálním spuštěn�
 
 ## Instalace
 
-Přiložený `Dockerfile` obsahuje již všechna nastavení potřebné k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí před vytvoření obrazu.
+Ve složce `WAP2_API` projektu je přiložený `Dockerfile`, který obsahuje již všechna nastavení potřebná k vytvoření obrazu pomocí prvního příkazu. Jakmile se obraz stáhne a úspěšně nastaví, druhým příkazem se spustí kontejner s vytvořenou API. Pro nastavení hodnoty portu (`PORT`), api klíče (`API_KEY`) nebo počtu zkoušení při čekání na kolekce (`COLLECTION_TRY_LIMIT`) stačí změnit náležité proměnné v proměnných prostředí před vytvoření obrazu.
 
 ```
 docker build -t boardgame-api .
