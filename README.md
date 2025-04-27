@@ -87,27 +87,45 @@ docker run -p 3000:3000 boardgame-api
 - **401**: Používá se při poskytnutí neplatného API klíče.
 - **404**: Používá se, pokud bylo poskytnuto neplatné identifikační číslo deskové hry.
 - **429**: Používá se při limitaci toku požadavků, pokud je překročen limit u dané IP adresy.
-- **504**: Používá se u kolekcí, pokud zdrojová API neodpoví v očekávaném časovém rámci.
 - **500**: Používá se jako výchozí chybový kód, pokud není specifikován jiný kód.
+- **504**: Používá se u kolekcí, pokud zdrojová API neodpoví v očekávaném nastavitelném časovém rámci.
 
 ## Proměnné prostředí
 
-Pro změnu portu, počtu vyzkoušení získání kolekce nebo změnu autentizačního klíče je potřeba v souboru proměnných prostředí `.env` náležité proměnné. Příklady zde zobrazené jsou výchozí hodnoty nastavené při jejich absenci.
+Pro změnu portu, počtu vyzkoušení získání kolekce nebo změnu autentizačního klíče je potřeba v souboru proměnných prostředí `.env` (ve složce `wap2_API`) náležité proměnné. Příklady zde zobrazené jsou výchozí hodnoty nastavené při jejich absenci.
 
 - **API_KEY**=debug-api-key
 - **COLLECTION_TRY_LIMIT**=10
 - **PORT**=3000
 
+## Testování
+
+Pro testování byla vytvořena velmi jednoduchá **HTML** + **Javascript** aplikace pro zobrazení dostupých dat z vytvořené API. Tuto aplikaci lze najít ve složce `wap2_aplikace` a spouští se jednoduše otevřením index.html přímo v prohlížeči. Aplikace byla vyzkoušena na prohlížeči **Microsoft Edge** (Verze 135.0.3179.98 (Official build) (64-bit)). 
+
+### Stručný popis aplikace zobrazující data
+
+Aplikace obsahuje 3 sekce podobné dostupným cestám z vytvořené API. První vyhledávací sekce `Search` nabízí vyhledávání deskových her spolu s ostatními položkami. Dostupné jsou filtry pro časová okna, ve kterých se mají vyhledávané položky vyskytovat. Dále také zaškrtávací pole pro vyhledávání přesně podle vyhledávacího řetězce. Níže se nachází další nastavení časového okna a další filtry pro zobrazení nabídek dané deskové hry. Každá vyhledaná desková hra obsahuje tlačítka na všechny konečné body vytvořené API kromě případu, kdy má vyhledavaná položka mylně typ deskové hry (popsanáno více u `Search` cesty, nebo na konci dokumentu).
+
+Druhou sekcí jsou kolekce, kde lze zobrazit kolekce uživatele podle uživatelského jména. Také se může navolit, aby se zobrazovaly pouze položky splňující určitou vlastnost. Vlastností je zde například vlastnění položky, předobjednání položky, atd. Lze je libovolně schovávat a zobrazovat podle požadavků.
+
+Poslední třetí sekcí jsou zaznamenané hry dané deskové hry. Podle identifikačního čísla deskové hry se naleznou všechny záznamy her splňující dané časové okno. K tomu také jde zobrazit jednotlivé koncové body vytvořené API k zaznamenaným hrám jako shrnutí, míra výher hráčů nebo denní záznamy.
+
+### Výsledky z testování
+
+Při implementaci jednoduché aplikace zobrazující data bylo potřeba se několikrát vrátit zpět do implementace vytvořené API a přepisovat různé překlepy, nebo chybné chybové kódy a zprávy. Největším problémem byla nekonzistence dat při zpracování požadavku ze zdrojové API. Proto se většina zpracování dat přepsala tak, aby při absenci specifických dat vytvořené API nehavarovalo. Další změnou je také přepracování návratových chybových kódů a zpráv. Do jisté doby vytvořená API vracela chybně kód $404$ kdykoliv nebyl žádný výsledek po zpracování a vyfiltrování dat. Nynější implementace vrací $404$ pouze v případě chybného identifikačního čísla deskové hry. V každém jiném případě, kdy po zpracování a filtrování nezbyde žádný výsledek, se vrací $200$ s prázdnou odpovědí.
+
 ## Dojmy autora z vypracovaného řešení
+
+Jedná se první API, kterou jsem implementoval a už do začátku jsem byl nejistý celkovým zadáním. Po konzultování konečných bodů jsem měl sice zhruba cíl, ale po naimplementování těchto konečných bodů se obávám, jestli výstupní data z některých z nich neměla být řešena až cílovou aplikací. Rád bych si zkusil do budoucna podobnou API naimplementovat s dopřednou znalostí cílové aplikace, pro kterou bych tuto API vytvářel. Také bych vyzkoušel jiné technologie.
 
 Určitě bych v budoucnu přidal limitaci časového okna, protože u známějších her při okně vyšším než půl roku při získávání zaznamenaných her se může jednat o více jak 50 dotazů na zdrojou API, kde už zaručeně dojde k dosažení limitu požadavků.
 
-Jedná se první API, kterou jsem implementoval a už do začátku jsem byl nejistý celkovým zadáním. Po konzultování konečných bodů jsem měl sice zhruba cíl, ale po naimplementování těchto konečných bodů se obávám, jestli výstupní data z některých z nich neměla být řešena až cílovou aplikací. Rád bych si zkusil do budoucna podobnou API naimplmentovat s dopřednou znalostí cílové aplikace, pro kterou bych tuto API vytvářel. Také bych vyzkoušel jiné technologie.
-
 Ještě jsem chtěl dodat, po prozkoumání možností ohledně problému z cesty `Search`, kdy položky obsahují chybně typ `boardgame` ačkoliv se jedná o expanze, se objevilo východisko v podobě dotazování na více deskových her jedním dotazem. Takové dotazování zdrojová API podporuje a tímto způsobem by se dalo u každé vyhledávané položky ověřit zda-li se opravdu jedná o deskovou hru, nebo o expanzi. Každopádně stále by zde byla otázka rychlosti odpovědi, kdy více jak 10 deskových her už může trvat déle a limit počtu načtení deskových her je 20. Z toho důvodu a také kvůli časovému jsem se rozhodl tuto funkcionalitu nezakomponovat do řešení.
 
-<!-- ## Struktura projektu
+## Struktura projektu
 
 ```
-
-``` -->
+wap2_API: Vytvořená API.
+wap2_aplikace: Vytvořená aplikace pro zobrazení dat z vytvořené API.
+README.md
+```
