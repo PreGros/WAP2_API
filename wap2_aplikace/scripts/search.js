@@ -76,7 +76,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                     });
 
                     if (!publishersResponse.ok) {
-                        publishersDiv.innerHTML = 'Given title is not a boardgame but some promo card or additional content to the given boardgame.';
+                        publishersDiv.innerHTML = 'Type is wrong, its not a boardgame. Its some additional content.';
                     }
                     else {
 
