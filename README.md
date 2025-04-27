@@ -98,6 +98,8 @@ Pro změnu portu, počtu vyzkoušení získání kolekce nebo změnu autentizač
 - **COLLECTION_TRY_LIMIT**=10
 - **PORT**=3000
 
+Při změně **PORTU** je také potřeba změnit uvnitř nastavený port v `Dockerfile` z původního $3000$. a spouštět kontejner se sprvnými porty. Dále aby jednoduchá aplikace zobrazující data fungovala, je potřeba změnit globální proměnnou v každém ze tří skriptů, která se nachází na prvním řádku každého z nich. Po změně `Dockerfile` je potřeba znovu postavit obraz.
+
 ## Testování
 
 Pro testování byla vytvořena velmi jednoduchá **HTML** + **Javascript** aplikace pro zobrazení dostupných dat z vytvořené API. Tuto aplikaci lze najít ve složce `wap2_aplikace` a spouští se jednoduše otevřením index.html přímo v prohlížeči. Aplikace byla vyzkoušena na prohlížeči **Microsoft Edge** (Verze 135.0.3179.98 (Official build) (64-bit)). 
