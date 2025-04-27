@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorded Plays</title>
+    <link rel="stylesheet" href="plays.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="#collections.html">Collections</a></li>
+            <li><a href="plays.html">Plays</a></li>
+        </ul>
+    </nav>
+    <h1>Recorded Plays</h1>
+    <div id="main-container">
+        <div id="search-controls">
+            <div class="row">
+                <div>
+                    <label for="gameId">Game ID:</label>
+                    <input type="text" id="gameId" placeholder="Enter Game ID">
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <label for="fromDate">From Date:</label>
+                    <input type="text" id="fromDate" placeholder="YYYY-MM-DD">
+                </div>
+                <div>
+                    <label for="toDate">To Date:</label>
+                    <input type="text" id="toDate" placeholder="YYYY-MM-DD">
+                </div>
+            </div>
+            <div class="row">
+                <button id="fetchData">Get Plays</button>
+            </div>
+        </div>
+        <div id="output"></div>
+    </div>
+    <script src="plays.js"></script>
+</body>
+</html>

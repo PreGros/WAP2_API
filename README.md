@@ -100,6 +100,8 @@ Pro změnu portu, počtu vyzkoušení získání kolekce nebo změnu autentizač
 
 ## Dojmy autora z vypracovaného řešení
 
+Určitě bych v budoucnu přidal limitaci časového okna, protože u známějších her při okně vyšším než půl roku při získávání zaznamenaných her se může jednat o více jak 50 dotazů na zdrojou API, kde už zaručeně dojde k dosažení limitu požadavků.
+
 Jedná se první API, kterou jsem implementoval a už do začátku jsem byl nejistý celkovým zadáním. Po konzultování konečných bodů jsem měl sice zhruba cíl, ale po naimplementování těchto konečných bodů se obávám, jestli výstupní data z některých z nich neměla být řešena až cílovou aplikací. Rád bych si zkusil do budoucna podobnou API naimplmentovat s dopřednou znalostí cílové aplikace, pro kterou bych tuto API vytvářel. Také bych vyzkoušel jiné technologie.
 
 Ještě jsem chtěl dodat, po prozkoumání možností ohledně problému z cesty `Search`, kdy položky obsahují chybně typ `boardgame` ačkoliv se jedná o expanze, se objevilo východisko v podobě dotazování na více deskových her jedním dotazem. Takové dotazování zdrojová API podporuje a tímto způsobem by se dalo u každé vyhledávané položky ověřit zda-li se opravdu jedná o deskovou hru, nebo o expanzi. Každopádně stále by zde byla otázka rychlosti odpovědi, kdy více jak 10 deskových her už může trvat déle a limit počtu načtení deskových her je 20. Z toho důvodu a také kvůli časovému jsem se rozhodl tuto funkcionalitu nezakomponovat do řešení.
