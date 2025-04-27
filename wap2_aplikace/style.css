@@ -162,6 +162,7 @@ button {
 }
 
 .show-marketplace {
+    margin-right: 4px;
     margin-top: 10px;
     background-color: #a8256d;
     color: white;
@@ -169,6 +170,16 @@ button {
 
 .show-marketplace:hover {
     background-color: #8a215b;
+}
+
+.show-solo-play {
+    margin-top: 10px;
+    background-color: #7e1dce;
+    color: white;
+}
+
+.show-solo-play:hover {
+    background-color: #5c1696;
 }
 
 .show-publishers {

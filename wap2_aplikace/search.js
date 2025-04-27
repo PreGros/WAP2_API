@@ -51,63 +51,12 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                 marketplaceButton.setAttribute('data-id', item.id);
                 marketplaceButton.textContent = 'Show Marketplace';
                 itemDiv.appendChild(marketplaceButton);
-        
-                marketplaceButton.addEventListener('click', async (event) => {
-                    const gameId = event.target.getAttribute('data-id');
-                    const fromDate = document.getElementById('fromDate').value.trim() || '1900-01-01';
-                    const toDate = document.getElementById('toDate').value.trim() || '2025-12-31';
-                    const sortOrder = document.getElementById('sortOrder').value;
-                    const currency = document.getElementById('currency').value;
-                    publishersDiv.innerHTML = 'Loading marketplace items...';
                 
-                    try {
-                        let query = `http://localhost:3000/api/boardgames/${gameId}/marketplace?fromdate=${fromDate}&todate=${toDate}`;
-                        if (sortOrder !== "none") {
-                            query += `&sort=${sortOrder}`;
-                        }
-
-                        if (currency !== "") {
-                            query += `&currency=${currency}`;   
-                        }
-
-                        const marketplaceResponse = await fetch(query, {
-                            headers: {
-                                'x-api-key': 'debug-api-key',
-                                'Accept': 'application/json'
-                            }
-                        });
-                
-                        if (!marketplaceResponse.ok) {
-                            publishersDiv.innerHTML = 'Type is wrong, its not a boardgame. Its some additional content.';
-                            return;
-                        }
-                
-                        const marketplaceData = await marketplaceResponse.json();
-                        console.log(marketplaceData); // Log the response to debug
-                
-                        if (!marketplaceData.marketListings || !Array.isArray(marketplaceData.marketListings) || marketplaceData.marketListings.length === 0) {
-                            publishersDiv.innerHTML = 'No marketplace items found for this boardgame.';
-                            return;
-                        }
-                
-                        publishersDiv.innerHTML = `<h2>Marketplace Items (${marketplaceData.listingsCount})</h2>`;
-                
-                        marketplaceData.marketListings.forEach(item => {
-                            const itemDiv = document.createElement('div');
-                            itemDiv.classList.add('marketplace-item');
-                            itemDiv.innerHTML = `
-                                <p><strong>List Date:</strong> ${new Date(item.listDate).toLocaleDateString()}</p>
-                                <p><strong>Price:</strong> ${item.price} ${item.currency}</p>
-                                <p><strong>Condition:</strong> ${item.condition}</p>
-                                <p><strong>Notes:</strong> ${item.notes}</p>
-                                <a href="${item.link}" target="_blank">View Listing</a>
-                            `;
-                            publishersDiv.appendChild(itemDiv);
-                        });
-                    } catch (error) {
-                        publishersDiv.innerHTML = `Error: ${error.message}`;
-                    }
-                });                
+                const soloPlayButton = document.createElement('button');
+                soloPlayButton.classList.add('show-solo-play');
+                soloPlayButton.setAttribute('data-id', item.id);
+                soloPlayButton.textContent = 'Show Solo Play Info';
+                itemDiv.appendChild(soloPlayButton);
             }
         
             outputDiv.appendChild(itemDiv);
@@ -148,6 +97,98 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                 }
             });
         });
+
+        document.querySelectorAll('.show-marketplace').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const gameId = event.target.getAttribute('data-id');
+                const fromDate = document.getElementById('fromDate').value.trim() || '1900-01-01';
+                const toDate = document.getElementById('toDate').value.trim() || '2025-12-31';
+                const sortOrder = document.getElementById('sortOrder').value;
+                const currency = document.getElementById('currency').value;
+                publishersDiv.innerHTML = 'Loading marketplace items...';
+        
+                try {
+                    let query = `http://localhost:3000/api/boardgames/${gameId}/marketplace?fromdate=${fromDate}&todate=${toDate}`;
+                    if (sortOrder !== "none") {
+                        query += `&sort=${sortOrder}`;
+                    }
+        
+                    if (currency !== "") {
+                        query += `&currency=${currency}`;   
+                    }
+        
+                    const marketplaceResponse = await fetch(query, {
+                        headers: {
+                            'x-api-key': 'debug-api-key',
+                            'Accept': 'application/json'
+                        }
+                    });
+        
+                    if (!marketplaceResponse.ok) {
+                        publishersDiv.innerHTML = 'Type is wrong, its not a boardgame. Its some additional content.';
+                        return;
+                    }
+        
+                    const marketplaceData = await marketplaceResponse.json();
+        
+                    if (!marketplaceData.marketListings || !Array.isArray(marketplaceData.marketListings) || marketplaceData.marketListings.length === 0) {
+                        publishersDiv.innerHTML = 'No marketplace items found for this boardgame.';
+                        return;
+                    }
+        
+                    publishersDiv.innerHTML = `<h2>Marketplace Items (${marketplaceData.listingsCount})</h2>`;
+        
+                    marketplaceData.marketListings.forEach(item => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.classList.add('marketplace-item');
+                        itemDiv.innerHTML = `
+                            <p><strong>List Date:</strong> ${new Date(item.listDate).toLocaleDateString()}</p>
+                            <p><strong>Price:</strong> ${item.price} ${item.currency}</p>
+                            <p><strong>Condition:</strong> ${item.condition}</p>
+                            <p><strong>Notes:</strong> ${item.notes}</p>
+                            <a href="${item.link}" target="_blank">View Listing</a>
+                        `;
+                        publishersDiv.appendChild(itemDiv);
+                    });
+                } catch (error) {
+                    publishersDiv.innerHTML = `Error: ${error.message}`;
+                }
+            });
+        });
+
+        document.querySelectorAll('.show-solo-play').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const gameId = event.target.getAttribute('data-id');
+                publishersDiv.innerHTML = 'Loading solo play information...';
+        
+                try {
+                    const soloPlayResponse = await fetch(`http://localhost:3000/api/boardgames/${gameId}/soloRef`, {
+                        headers: {
+                            'x-api-key': 'debug-api-key',
+                            'Accept': 'application/json'
+                        }
+                    });
+        
+                    if (!soloPlayResponse.ok) {
+                        publishersDiv.innerHTML = 'Type is wrong, its not a boardgame. Its some additional content.';
+                        return;
+                    }
+        
+                    const soloPlayData = await soloPlayResponse.json();
+                    const soloRef = soloPlayData.soloRef;
+        
+                    publishersDiv.innerHTML = `
+                        <h2>Solo Play Information</h2>
+                        <p><strong>Best:</strong> ${(soloRef.best * 100).toFixed(2)}%</p>
+                        <p><strong>Recommended:</strong> ${(soloRef.recommended * 100).toFixed(2)}%</p>
+                        <p><strong>Not Recommended:</strong> ${(soloRef.notRecommended * 100).toFixed(2)}%</p>
+                    `;
+                } catch (error) {
+                    publishersDiv.innerHTML = `Error: ${error.message}`;
+                }
+            });
+        });
+
     } catch (error) {
         outputDiv.innerHTML = `Error: ${error.message}`;
     }
