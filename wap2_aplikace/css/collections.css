@@ -1,0 +1,126 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: background-color 0.3s, border-radius 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #d8d8d8;
+    border-radius: 5px;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#main-container {
+    width: 60%;
+    margin: 0 auto;
+}
+
+/* Search Controls */
+#search-controls {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#search-controls .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#search-controls input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+#search-controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#search-controls button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#search-controls button:hover {
+    background-color: #0056b3;
+}
+
+.switch-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    gap: 15px; /* Space between grid items */
+}
+
+.property-group {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f5f5f5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.property-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.property-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+/* Output */
+#output {
+    margin-top: 20px;
+}
+
+.play-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
