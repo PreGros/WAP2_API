@@ -76,3 +76,145 @@ document.getElementById('fetchData').addEventListener('click', async () => {
         outputDiv.innerHTML = `Error: ${error.message}`;
     }
 });
+
+
+document.getElementById('playsSummary').addEventListener('click', async () => {
+    const outputDiv = document.getElementById('output');
+    const gameId = document.getElementById('gameId').value.trim();
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const fromDate = document.getElementById('fromDate').value.trim() || yesterday.toISOString().split('T')[0];
+    const toDate = document.getElementById('toDate').value.trim() || today.toISOString().split('T')[0];
+
+    if (!gameId) {
+        outputDiv.innerHTML = 'Please enter a valid Game ID.';
+        return;
+    }
+
+    outputDiv.innerHTML = 'Loading...';
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/summary?fromdate=${fromDate}&todate=${toDate}`, {
+            headers: {
+                'x-api-key': 'debug-api-key',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        outputDiv.innerHTML = `
+            <h2>Plays Summary</h2>
+            <p><strong>Total Plays:</strong> ${data.totalPlays}</p>
+            <p><strong>Total Play Time:</strong> ${data.playTimeStats.totalPlayTime} minutes</p>
+            <p><strong>Non-Zero Time Play Count:</strong> ${data.playTimeStats.nonZeroPlayCount}</p>
+            <p><strong>Max Play Time:</strong> ${data.playTimeStats.maxPlayTime} minutes</p>
+            <p><strong>Min Play Time:</strong> ${data.playTimeStats.minPlayTime} minutes</p>
+            <p><strong>Average Play Time:</strong> ${data.playTimeStats.averagePlayTime.toFixed(2)} minutes</p>
+            <p><strong>Unique Players:</strong> ${data.uniquePlayers}</p>
+            <p><strong>Date Range:</strong> From ${data.dateRange.from} to ${data.dateRange.to}</p>
+        `;
+    } catch (error) {
+        outputDiv.innerHTML = `Error: ${error.message}`;
+    }
+});
+
+document.getElementById('playsWinrate').addEventListener('click', async () => {
+    const outputDiv = document.getElementById('output');
+    const gameId = document.getElementById('gameId').value.trim();
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const fromDate = document.getElementById('fromDate').value.trim() || yesterday.toISOString().split('T')[0];
+    const toDate = document.getElementById('toDate').value.trim() || today.toISOString().split('T')[0];
+
+    if (!gameId) {
+        outputDiv.innerHTML = 'Please enter a valid Game ID.';
+        return;
+    }
+
+    outputDiv.innerHTML = 'Loading...';
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/winrate?fromdate=${fromDate}&todate=${toDate}`, {
+            headers: {
+                'x-api-key': 'debug-api-key',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        outputDiv.innerHTML = `
+            <h2>Winrate Summary</h2>
+            <p><strong>Plays Players Recorded:</strong> ${data.playersRecordedLen}</p>
+            <p><strong>Win Counts:</strong></p>
+            <ul>
+                <li><strong>0 Player Wins:</strong> ${data.winCounts['0playerwinrate']}</li>
+                <li><strong>1 Player Wins:</strong> ${data.winCounts['1playerwinrate']}</li>
+                <li><strong>2 Player Wins:</strong> ${data.winCounts['2playerwinrate']}</li>
+                <li><strong>3 Player Wins:</strong> ${data.winCounts['3playerwinrate']}</li>
+                <li><strong>4 Player Wins:</strong> ${data.winCounts['4playerwinrate']}</li>
+                <li><strong>5 Player Wins:</strong> ${data.winCounts['5playerwinrate']}</li>
+            </ul>
+        `;
+    } catch (error) {
+        outputDiv.innerHTML = `Error: ${error.message}`;
+    }
+});
+
+document.getElementById('playsDaily').addEventListener('click', async () => {
+    const outputDiv = document.getElementById('output');
+    const gameId = document.getElementById('gameId').value.trim();
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const fromDate = document.getElementById('fromDate').value.trim() || yesterday.toISOString().split('T')[0];
+    const toDate = document.getElementById('toDate').value.trim() || today.toISOString().split('T')[0];
+
+    if (!gameId) {
+        outputDiv.innerHTML = 'Please enter a valid Game ID.';
+        return;
+    }
+
+    outputDiv.innerHTML = 'Loading...';
+
+    try {
+        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/daily?fromdate=${fromDate}&todate=${toDate}`, {
+            headers: {
+                'x-api-key': 'debug-api-key',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const dailyCounts = Object.entries(data.dailyPlayCount)
+            .map(([date, count]) => `<li>${date}: ${count} plays</li>`)
+            .join('');
+
+        outputDiv.innerHTML = `
+            <h2>Daily Play Counts</h2>
+            <p><strong>Total Play Count:</strong> ${data.totalPlayCount}</p>
+            <ul>${dailyCounts}</ul>
+        `;
+    } catch (error) {
+        outputDiv.innerHTML = `Error: ${error.message}`;
+    }
+});
