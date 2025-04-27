@@ -1,3 +1,5 @@
+const PORT = 3000;
+
 document.getElementById('fetchData').addEventListener('click', async () => {
     const outputDiv = document.getElementById('output');
     const userName = document.getElementById('userName').value.trim();
@@ -9,7 +11,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
 
     outputDiv.innerHTML = 'Loading...';
 
-    let queryUrl = `http://localhost:3000/api/collection/${userName}?display=`;
+    let queryUrl = `http://localhost:${PORT}/api/collection/${userName}?display=`;
 
     let propertiesToAdd = [];
 

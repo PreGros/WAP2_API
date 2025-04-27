@@ -1,3 +1,5 @@
+const PORT = 3000;
+
 document.getElementById('fetchData').addEventListener('click', async () => {
     const outputDiv = document.getElementById('output');
     const publishersDiv = document.getElementById('publishers');
@@ -9,7 +11,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
     publishersDiv.innerHTML = '';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/search?query=${searchQuery}&exact=${exactSwitch}&fromdate=${fromYear}-01-01&todate=${toYear}-01-01`, {
+        const response = await fetch(`http://localhost:${PORT}/api/search?query=${searchQuery}&exact=${exactSwitch}&fromdate=${fromYear}-01-01&todate=${toYear}-01-01`, {
             headers: {
                 'x-api-key': 'debug-api-key',
                 'Accept': 'application/json'
@@ -68,7 +70,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                 publishersDiv.innerHTML = 'Loading publishers...';
 
                 try {
-                    const publishersResponse = await fetch(`http://localhost:3000/api/boardgames/${gameId}/publishers`, {
+                    const publishersResponse = await fetch(`http://localhost:${PORT}/api/boardgames/${gameId}/publishers`, {
                         headers: {
                             'x-api-key': 'debug-api-key',
                             'Accept': 'application/json'
@@ -108,7 +110,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                 publishersDiv.innerHTML = 'Loading marketplace items...';
         
                 try {
-                    let query = `http://localhost:3000/api/boardgames/${gameId}/marketplace?fromdate=${fromDate}&todate=${toDate}`;
+                    let query = `http://localhost:${PORT}/api/boardgames/${gameId}/marketplace?fromdate=${fromDate}&todate=${toDate}`;
                     if (sortOrder !== "none") {
                         query += `&sort=${sortOrder}`;
                     }
@@ -162,7 +164,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
                 publishersDiv.innerHTML = 'Loading solo play information...';
         
                 try {
-                    const soloPlayResponse = await fetch(`http://localhost:3000/api/boardgames/${gameId}/soloRef`, {
+                    const soloPlayResponse = await fetch(`http://localhost:${PORT}/api/boardgames/${gameId}/soloRef`, {
                         headers: {
                             'x-api-key': 'debug-api-key',
                             'Accept': 'application/json'

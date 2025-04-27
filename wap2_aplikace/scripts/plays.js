@@ -1,3 +1,5 @@
+const PORT = 3000;
+
 document.getElementById('fetchData').addEventListener('click', async () => {
     const outputDiv = document.getElementById('output');
     const gameId = document.getElementById('gameId').value.trim();
@@ -17,7 +19,7 @@ document.getElementById('fetchData').addEventListener('click', async () => {
     outputDiv.innerHTML = 'Loading...';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/plays/${gameId}?fromdate=${fromDate}&todate=${toDate}`, {
+        const response = await fetch(`http://localhost:${PORT}/api/plays/${gameId}?fromdate=${fromDate}&todate=${toDate}`, {
             headers: {
                 'x-api-key': 'debug-api-key',
                 'Accept': 'application/json'
@@ -97,7 +99,7 @@ document.getElementById('playsSummary').addEventListener('click', async () => {
     outputDiv.innerHTML = 'Loading...';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/summary?fromdate=${fromDate}&todate=${toDate}`, {
+        const response = await fetch(`http://localhost:${PORT}/api/plays/${gameId}/summary?fromdate=${fromDate}&todate=${toDate}`, {
             headers: {
                 'x-api-key': 'debug-api-key',
                 'Accept': 'application/json'
@@ -144,7 +146,7 @@ document.getElementById('playsWinrate').addEventListener('click', async () => {
     outputDiv.innerHTML = 'Loading...';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/winrate?fromdate=${fromDate}&todate=${toDate}`, {
+        const response = await fetch(`http://localhost:${PORT}/api/plays/${gameId}/winrate?fromdate=${fromDate}&todate=${toDate}`, {
             headers: {
                 'x-api-key': 'debug-api-key',
                 'Accept': 'application/json'
@@ -156,18 +158,16 @@ document.getElementById('playsWinrate').addEventListener('click', async () => {
         }
 
         const data = await response.json();
+
+        const winrateList = Object.entries(data.winCounts)
+            .map(([key, value]) => `<li><strong>${key.replace('playerwinrate', ' Player Wins')}:</strong> ${value}</li>`)
+            .join('');
+
         outputDiv.innerHTML = `
             <h2>Winrate Summary</h2>
             <p><strong>Plays Players Recorded:</strong> ${data.playersRecordedLen}</p>
             <p><strong>Win Counts:</strong></p>
-            <ul>
-                <li><strong>0 Player Wins:</strong> ${data.winCounts['0playerwinrate']}</li>
-                <li><strong>1 Player Wins:</strong> ${data.winCounts['1playerwinrate']}</li>
-                <li><strong>2 Player Wins:</strong> ${data.winCounts['2playerwinrate']}</li>
-                <li><strong>3 Player Wins:</strong> ${data.winCounts['3playerwinrate']}</li>
-                <li><strong>4 Player Wins:</strong> ${data.winCounts['4playerwinrate']}</li>
-                <li><strong>5 Player Wins:</strong> ${data.winCounts['5playerwinrate']}</li>
-            </ul>
+            <ul>${winrateList}</ul>
         `;
     } catch (error) {
         outputDiv.innerHTML = `Error: ${error.message}`;
@@ -193,7 +193,7 @@ document.getElementById('playsDaily').addEventListener('click', async () => {
     outputDiv.innerHTML = 'Loading...';
 
     try {
-        const response = await fetch(`http://localhost:3000/api/plays/${gameId}/daily?fromdate=${fromDate}&todate=${toDate}`, {
+        const response = await fetch(`http://localhost:${PORT}/api/plays/${gameId}/daily?fromdate=${fromDate}&todate=${toDate}`, {
             headers: {
                 'x-api-key': 'debug-api-key',
                 'Accept': 'application/json'
