@@ -1,0 +1,59 @@
+### Get board game details by ID
+GET http://localhost:3000/api/plays/313790?fromdate=2025-03-25
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-04-25
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/plays/167355/summary?fromdate=2025-01-10&todate=2025-04-11
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/plays/167355/winrate?fromdate=2025-04-20
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/plays/167355/daily?fromdate=2025-04-01
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/boardgames/167355
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/boardgames/167355/soloRef
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/boardgames/20818/publishers
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/boardgames/167355/marketplace?sort=descending&fromdate=2025-03-01
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/search?query=Nemesis&exact=1
+x-api-key: debug-api-key
+Accept: application/json
+
+### 
+GET http://localhost:3000/api/collection/Beru?display=
+x-api-key: debug-api-key
+Accept: application/json
+
+###
+GET http://localhost:3000/api/boardgames/13/marketplace?fromdate=1900-01-01&todate=2025-01-01
+x-api-key: debug-api-key
+Accept: application/json

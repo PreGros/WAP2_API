@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Board Games</title>
+    <link rel="stylesheet" href="../css/search.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="plays.html">Plays</a></li>
+        </ul>
+    </nav>
+    <h1>Search Board Games</h1>
+    <div id="main-container">
+        <div id="search-container">
+            <div id="search-controls">
+                <div class="row">
+                    <input type="text" id="searchQuery" placeholder="Enter search query">
+                    <label>
+                        <input type="checkbox" id="exactSwitch"> Exact Match
+                    </label>
+                </div>
+                <div class="row">
+                    <div>
+                        <label for="fromYear">From Year:</label>
+                        <input type="text" id="fromYear" placeholder="YYYY">
+                    </div>
+                    <div>
+                        <label for="toYear">To Year:</label>
+                        <input type="text" id="toYear" placeholder="YYYY">
+                    </div>
+                </div>
+                <div class="row">
+                    <button id="fetchData">Get Board Game Details</button>
+                </div>
+            </div>
+            <div id="marketplace-filters">
+                <h3>Marketplace Filtering</h3>
+                <div>
+                    <label for="fromDate">From Date:</label>
+                    <input type="text" id="fromDate" placeholder="YYYY-MM-DD">
+                </div>
+                <div>
+                    <label for="toDate">To Date:</label>
+                    <input type="text" id="toDate" placeholder="YYYY-MM-DD">
+                </div>
+                <div>
+                    <label for="sortOrder">Sort Order:</label>
+                    <select id="sortOrder">
+                        <option value="none" selected>None</option>
+                        <option value="ascending">Ascending</option>
+                        <option value="descending">Descending</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="currency">Currency:</label>
+                    <input type="text" id="currency" placeholder="EUR" title="Enter a valid currency code, e.g., USD, EUR, GBP">
+                </div>
+            </div>
+            <div id="output"></div>
+        </div>
+        <div id="publishers-container">
+            <div id="publishers"></div>
+        </div>
+    </div>
+    <script src="../scripts/search.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recorded Plays</title>
+    <link rel="stylesheet" href="../css/collections.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="search.html">Search</a></li>
+            <li><a href="collections.html">Collections</a></li>
+            <li><a href="plays.html">Plays</a></li>
+        </ul>
+    </nav>
+    <h1>Recorded Plays</h1>
+    <div id="main-container">
+        <div id="search-controls">
+            <div class="row">
+                <div>
+                    <label for="userName">User Name</label>
+                    <input type="text" id="userName" placeholder="Beru">
+                </div>
+            </div>
+            <div class="row">
+                <div>
+                    <label>Properties:</label>
+                    <div class="switch-group">
+                        <div class="property-group">
+                            <label>Own:</label>
+                            <label>
+                                <input type="radio" name="own" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="own" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="own" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Previously Owned:</label>
+                            <label>
+                                <input type="radio" name="prevowned" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="prevowned" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="prevowned" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>For Trade:</label>
+                            <label>
+                                <input type="radio" name="fortrade" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="fortrade" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="fortrade" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Want:</label>
+                            <label>
+                                <input type="radio" name="want" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="want" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="want" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Want to Play:</label>
+                            <label>
+                                <input type="radio" name="wanttoplay" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="wanttoplay" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="wanttoplay" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Want to Buy:</label>
+                            <label>
+                                <input type="radio" name="wanttobuy" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="wanttobuy" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="wanttobuy" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Wishlist:</label>
+                            <label>
+                                <input type="radio" name="wishlist" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="wishlist" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="wishlist" value="show">
+                                Show
+                            </label>
+                        </div>
+                        <div class="property-group">
+                            <label>Preordered:</label>
+                            <label>
+                                <input type="radio" name="preordered" value="default" checked>
+                                Default
+                            </label>
+                            <label>
+                                <input type="radio" name="preordered" value="hide">
+                                Hide
+                            </label>
+                            <label>
+                                <input type="radio" name="preordered" value="show">
+                                Show
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button id="fetchData">Get Collection</button>
+            </div>
+        </div>
+        <div id="output"></div>
+    </div>
+    <script src="../scripts/collections.js"></script>
+</body>
+</html>
